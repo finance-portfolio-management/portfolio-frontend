@@ -1,4 +1,4 @@
-import { addAssets, getAllAssets, getSingleAsset, updateSingleAsset } from '../scripts/api/assetsAPI.js';
+import { addAssets, getAllAssets, getSingleAsset, updateSingleAsset, deleteSingleAsset } from '../scripts/api/assetsAPI.js';
 
 function clearAllInputs() {
     document.querySelectorAll('input, textarea, select').forEach(el => el.value = '');
@@ -76,4 +76,21 @@ async function updateSingleAssetTest() {
     clearAllInputs();
 
     
+}
+
+
+document.getElementById('deleteSingleAssetBtn').addEventListener('click', () => {
+    deleteSingleAssetTest();
+});
+async function deleteSingleAssetTest() {
+    const payload = {
+        symbol: document.getElementById('deletSingleAssetInput').value,
+    };
+    const data = await deleteSingleAsset(payload);
+    if (data instanceof Error) {
+        document.getElementsByClassName("test-output-content")[0].innerHTML = 'Error deleting the asset: ' + data.message;
+        return;
+    }
+    console.log(data);
+    document.getElementsByClassName("test-output-content")[0].innerHTML = JSON.stringify(data, null, 2);
 }
