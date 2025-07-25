@@ -1,4 +1,5 @@
 import { addAssets, getAllAssets, getSingleAsset, updateSingleAsset, deleteSingleAsset } from '../scripts/api/assetsAPI.js';
+import { getSingleHistoricalAsset } from '../scripts/api/assetsHistoryAPI.js';
 
 function clearAllInputs() {
     document.querySelectorAll('input, textarea, select').forEach(el => el.value = '');
@@ -93,4 +94,27 @@ async function deleteSingleAssetTest() {
     }
     console.log(data);
     document.getElementsByClassName("test-output-content")[0].innerHTML = JSON.stringify(data, null, 2);
+}
+
+
+
+document.getElementById('getSingleHistoricalAssetsBtn').addEventListener('click', () => {
+    getSingleHistoricalAssetTest();
+});
+async function getSingleHistoricalAssetTest() {
+    const payload = {
+        symbol: document.getElementById('singleHistoricalAssetInput').value,
+        start: document.getElementById('singleHistoricalStarttimeInput').value,
+        end: document.getElementById('singleHistoricalEndtimeInput').value,
+        interval: document.getElementById('singleHistoricalIntervalInput').value
+    };
+    const data = await getSingleHistoricalAsset(payload);
+    if (data instanceof Error) {
+        document.getElementsByClassName("test-output-content")[0].innerHTML = 'Error fetching single historical asset: ' + data.message;
+        return;
+    }
+    console.log(data);
+    document.getElementsByClassName("test-output-content")[0].innerHTML = JSON.stringify(data, null, 2);
+    clearAllInputs();
+
 }
