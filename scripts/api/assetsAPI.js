@@ -36,11 +36,6 @@ export async function addAssets(payload) {
   export async function getAllAssets() {
     return new Promise(async (resolve, reject) => {
       try {
-        // Example payload: randomly generated assets
-        // const payload = {
-        //   symbol: "TSLA",
-        //   type: "stock"
-        // };
   
         const response = await fetch('http://localhost:3000/api/assets', {
           method: 'GET'
@@ -57,6 +52,32 @@ export async function addAssets(payload) {
   
       } catch (error) {
         console.error('Failed to get assets:', error);
+        resolve(error);
+      }
+    });
+  }
+
+
+
+  export async function getSingleAsset(payload) {
+    return new Promise(async (resolve, reject) => {
+      try {
+  
+        const response = await fetch(`http://localhost:3000/api/assets/${payload.symbol}`, {
+          method: 'GET'
+        });
+  
+        
+        const data = await response.json()
+        if (!response.ok) {
+            throw new Error(data.error);
+        }
+
+  
+        resolve(data);
+  
+      } catch (error) {
+        console.error('Failed to get asset:', error);
         resolve(error);
       }
     });
