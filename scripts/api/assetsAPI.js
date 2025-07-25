@@ -1,85 +1,113 @@
 export async function addAssets(payload) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        // Example payload: randomly generated assets
-        // const payload = {
-        //   symbol: "TSLA",
-        //   type: "stock"
-        // };
-  
-        const response = await fetch('http://localhost:3000/api/assets', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-  
-        
-  
-        const data = await response.json()
-        if (!response.ok) {
-            throw new Error(data.error);
-        }
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Example payload: randomly generated assets
+      // const payload = {
+      //   symbol: "TSLA",
+      //   type: "stock"
+      // };
 
-  
-        resolve(data);
-  
-      } catch (error) {
-        console.error('Failed to create assets:', error);
-        resolve(error);
+      const response = await fetch('http://localhost:3000/api/assets', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+
+
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.error);
       }
-    });
-  }
-  
 
-  export async function getAllAssets() {
-    return new Promise(async (resolve, reject) => {
-      try {
-  
-        const response = await fetch('http://localhost:3000/api/assets', {
-          method: 'GET'
-        });
-  
-        
-        const data = await response.json()
-        if (!response.ok) {
-            throw new Error(data.error);
-        }
 
-  
-        resolve(data);
-  
-      } catch (error) {
-        console.error('Failed to get assets:', error);
-        resolve(error);
+      resolve(data);
+
+    } catch (error) {
+      console.error('Failed to create assets:', error);
+      resolve(error);
+    }
+  });
+}
+
+
+export async function getAllAssets() {
+  return new Promise(async (resolve, reject) => {
+    try {
+
+      const response = await fetch('http://localhost:3000/api/assets', {
+        method: 'GET'
+      });
+
+
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.error);
       }
-    });
-  }
+
+
+      resolve(data);
+
+    } catch (error) {
+      console.error('Failed to get assets:', error);
+      resolve(error);
+    }
+  });
+}
 
 
 
-  export async function getSingleAsset(payload) {
-    return new Promise(async (resolve, reject) => {
-      try {
-  
-        const response = await fetch(`http://localhost:3000/api/assets/${payload.symbol}`, {
-          method: 'GET'
-        });
-  
-        
-        const data = await response.json()
-        if (!response.ok) {
-            throw new Error(data.error);
-        }
+export async function getSingleAsset(payload) {
+  return new Promise(async (resolve, reject) => {
+    try {
 
-  
-        resolve(data);
-  
-      } catch (error) {
-        console.error('Failed to get asset:', error);
-        resolve(error);
+      const response = await fetch(`http://localhost:3000/api/assets/${payload.symbol}`, {
+        method: 'GET'
+      });
+
+
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.error);
       }
-    });
-  }
-  
+
+
+      resolve(data);
+
+    } catch (error) {
+      console.error('Failed to get asset:', error);
+      resolve(error);
+    }
+  });
+}
+
+
+export async function updateSingleAsset(payload) {
+  return new Promise(async (resolve, reject) => {
+    try {
+
+      const response = await fetch(`http://localhost:3000/api/assets/${payload.name}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.error);
+      }
+
+
+      resolve(data);
+
+    } catch (error) {
+      console.error('Failed to update asset:', error);
+      resolve(error);
+    }
+  });
+}
