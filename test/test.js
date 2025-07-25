@@ -1,4 +1,9 @@
-import { addAssets, getAllAssets, getSingleAsset } from '../scripts/api/assetsAPI.js';
+import { addAssets, getAllAssets, getSingleAsset, updateSingleAsset } from '../scripts/api/assetsAPI.js';
+
+function clearAllInputs() {
+    document.querySelectorAll('input, textarea, select').forEach(el => el.value = '');
+}
+
 document.getElementById('addAssetBtn').addEventListener('click', () => {
     addAndLoadDataTest();
 });
@@ -14,6 +19,7 @@ async function addAndLoadDataTest() {
     }
     console.log(data);
     document.getElementsByClassName("test-output-content")[0].innerHTML = JSON.stringify(data, null, 2);
+    clearAllInputs();
 }
 
 
@@ -46,4 +52,28 @@ async function getSingleAssetTest() {
     }
     console.log(data);
     document.getElementsByClassName("test-output-content")[0].innerHTML = JSON.stringify(data, null, 2);
+    clearAllInputs();
+
+}
+
+
+document.getElementById('updateSingleAssetBtn').addEventListener('click', () => {
+    updateSingleAssetTest();
+});
+async function updateSingleAssetTest() {
+    const payload = {
+        name: document.getElementById('updateSingleAssetInput').value,
+        type: document.getElementById('updateSingleTypeInput').value,
+        exchange: document.getElementById('updateSingleExchangeInput').value
+    };
+    const data = await updateSingleAsset(payload);
+    if (data instanceof Error) {
+        document.getElementsByClassName("test-output-content")[0].innerHTML = 'Error updating the asset: ' + data.message;
+        return;
+    }
+    console.log(data);
+    document.getElementsByClassName("test-output-content")[0].innerHTML = JSON.stringify(data, null, 2);
+    clearAllInputs();
+
+    
 }
