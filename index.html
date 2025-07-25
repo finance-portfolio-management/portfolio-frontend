@@ -2,17 +2,96 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Chart with Refresh</title>
-  <link rel="stylesheet" href="styles/main.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Finance Portfolio</title>
+  <link rel="stylesheet" href="./styles/main.css" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
 </head>
 <body>
-  <button id="refreshBtn">Load New Data</button>
-  <div id="main" style="width: 600px; height: 400px;"></div>
+  <header class="header">
+    <h2>📈 Finance Portfolio</h2>
+    <div>2025年7月24日</div>
+    <div class="header-right">
+      <button>Sign out</button>
+      <span class="wechat-tag">微信用户</span>
+    </div>
+  </header>
 
-  <!-- ECharts CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <main class="main">
+    <div class="left">
+      <div class="top-section">
+        <div class="left-column">
+          <div class="card net-worth">
+            <h4>Net Worth</h4>
+            <p>¥1,234,567.89</p>
+          </div>
+          <div class="card growth-rate">
+            <h4>Growth Rate</h4>
+            <div id="gaugeChart" style="height: 120px;"></div>
+          </div>
+        </div>
+        <div class="card pie-chart">
+          <h4>Asset Distribution</h4>
+          <div id="pieChart" style="height: 160px;"></div>
+        </div>
+      </div>
 
-  <!-- Your main script -->
-  <script type="module" src="scripts/main.js"></script>
+      <div class="card market-trends">
+        <h4>Market Trends</h4>
+        <div class="tabs">
+          <button>1D</button><button>1W</button><button>1M</button><button>3M</button>
+        </div>
+        <div id="lineChart" style="height: 180px;"></div>
+      </div>
+
+      <div class="bottom-section">
+        <div class="card gainers">
+          <h4>Top Gainers</h4>
+          <ul>
+            <li>BID +6.27</li>
+            <li>WST +3.97</li>
+            <li>ICLR +3.77</li>
+            <li>PKI +3.60</li>
+          </ul>
+        </div>
+        <div class="card losers">
+          <h4>Top Losers</h4>
+          <ul>
+            <li>IRM -2.56</li>
+            <li>LQY -2.37</li>
+            <li>DOV -2.26</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="card investment-list">
+        <h4>Investment List</h4>
+        <ul>
+          <li class="toggle" data-target="stocks">📘 Stocks ¥420.74</li>
+          <ul class="sub" id="stocks"><li>GOOG</li><li>AAPL</li></ul>
+
+          <li class="toggle" data-target="funds">📗 Funds ¥320.37</li>
+          <ul class="sub" id="funds"><li>AAPL</li><li>AAPL</li></ul>
+
+          <li class="toggle" data-target="bonds">📘 Bonds ¥370.37</li>
+          <ul class="sub" id="bonds"><li>AAPL</li></ul>
+
+          <li class="toggle" data-target="cash">📘 Cash ¥123.45</li>
+          <ul class="sub" id="cash"><li>AAPL</li></ul>
+
+          <li class="toggle" data-target="others">📘 Others ¥5.00</li>
+          <ul class="sub" id="others"><li>AAPL</li></ul>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>📢 Investment Advice: Diversification reduces risk - spread assets across sectors.</p>
+  </footer>
+
+  <script src="./scripts/main.js"></script>
 </body>
 </html>
