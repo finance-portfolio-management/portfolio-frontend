@@ -15,18 +15,49 @@ export async function addAssets(payload) {
           body: JSON.stringify(payload)
         });
   
+        
+  
+        const data = await response.json()
         if (!response.ok) {
-          throw new Error(`Server error: ${response.status}`);
+            throw new Error(data.error);
         }
-  
-        const data = await response.json();
-  
+
   
         resolve(data);
   
       } catch (error) {
         console.error('Failed to create assets:', error);
-        resolve({ labels: [], values: [] });
+        resolve(error);
+      }
+    });
+  }
+  
+
+  export async function getAllAssets() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Example payload: randomly generated assets
+        // const payload = {
+        //   symbol: "TSLA",
+        //   type: "stock"
+        // };
+  
+        const response = await fetch('http://localhost:3000/api/assets', {
+          method: 'GET'
+        });
+  
+        
+        const data = await response.json()
+        if (!response.ok) {
+            throw new Error(data.error);
+        }
+
+  
+        resolve(data);
+  
+      } catch (error) {
+        console.error('Failed to get assets:', error);
+        resolve(error);
       }
     });
   }

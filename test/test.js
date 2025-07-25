@@ -1,4 +1,4 @@
-import { addAssets } from '../scripts/api/assetsAPI.js';
+import { addAssets, getAllAssets } from '../scripts/api/assetsAPI.js';
 document.getElementById('addAssetBtn').addEventListener('click', () => {
     addAndLoadDataTest();
 });
@@ -8,6 +8,25 @@ async function addAndLoadDataTest() {
         type: document.getElementById('typeInput').value
     };
     const data = await addAssets(payload);
-    console.log('Assets added:', data);
+    if (data instanceof Error) {
+        document.getElementsByClassName("test-output-content")[0].innerHTML = 'Error fetching assets: ' + data.message;
+        return;
+    }
+    console.log(data);
+    document.getElementsByClassName("test-output-content")[0].innerHTML = JSON.stringify(data, null, 2);
+}
 
+
+
+document.getElementById('getAllAssetsBtn').addEventListener('click', () => {
+    getAllAssetsTest();
+});
+async function getAllAssetsTest() {
+    const data = await getAllAssets();
+    if (data instanceof Error) {
+        document.getElementsByClassName("test-output-content")[0].innerHTML = 'Error fetching assets: ' + data.message;
+        return;
+    }
+    console.log(data);
+    document.getElementsByClassName("test-output-content")[0].innerHTML = JSON.stringify(data, null, 2);
 }

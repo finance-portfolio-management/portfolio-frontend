@@ -1,16 +1,33 @@
 <!DOCTYPE html>
 
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Test Chart</title>
-  
+  <link rel="stylesheet" href="./test.css" />
 </head>
+
 <body>
-    <input type="text" id="assetInput" placeholder="Enter asset symbol" />
-    <input type="text" id="typeInput" placeholder="Enter type" />
-    <button id="addAssetBtn">Add Asset</button>
-    
+  <div class="test-body-container">
+    <div class="test-assets-container">
+      <div class="test-add-asset">
+        <input type="text" id="assetInput" placeholder="Enter asset symbol" />
+        <input type="text" id="typeInput" placeholder="Enter type" />
+        <button id="addAssetBtn">Add Asset</button>
+      </div>
+      <div class="test-get-all-assets">
+        <button id="getAllAssetsBtn">Get All Assets</button>
+      </div>
+      <div></div>
+    </div>
+    <div class="test-output-container">
+      <div class="test-output-content">
+
+      </div>
+    </div>
+  </div>
+
 </body>
 <script src="./test.js" type="module"></script>
 
