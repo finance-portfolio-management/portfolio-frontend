@@ -1,97 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Finance Portfolio</title>
-  <link rel="stylesheet" href="./styles/main.css" />
-  <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance Portfolio</title>
+<!-- Tailwind CSS for styling -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Google Fonts: Inter for a modern and clean typeface -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Link to external CSS file -->
+<link rel="stylesheet" href="./styles/main.css">
 </head>
-<body>
-  <header class="header">
-    <h2>📈 Finance Portfolio</h2>
-    <div>2025年7月24日</div>
-    <div class="header-right">
-      <button>Sign out</button>
-      <span class="wechat-tag">微信用户</span>
+
+<body class="p-2 md:p-4">
+
+<div class="max-w-screen-2xl mx-auto">
+  <!-- Header Section: Title, Date Picker, User Info, Sign Out Button -->
+  <header class="flex justify-between items-center mb-2">
+    <div class="flex items-center gap-3">
+      <!-- Financial Icon (SVG) -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+      <h1 class="text-xl font-bold text-gray-800">Finance Portfolio</h1>
+      <!-- Date Picker Input -->
+      <input type="date" id="date-picker" class="ml-2">
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="font-medium text-gray-700 text-sm">Boss</span>
+      <button
+        class="px-3 py-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
+        Sign out
+      </button>
     </div>
   </header>
 
-  <main class="main">
-    <div class="left">
-      <div class="top-section">
-        <div class="left-column">
-          <div class="card net-worth">
-            <h4>Net Worth</h4>
-            <p>¥1,234,567.89</p>
+  <!-- Main Content Area: Divided into two columns -->
+  <main class="flex flex-col lg:flex-row gap-2">
+
+    <!-- Left Column: Net Worth, Asset Distribution, Market Trends, Top Gainers/Losers -->
+    <div class="flex-grow flex flex-col gap-2">
+      <!-- Top Row: Net Worth and Asset Distribution Cards -->
+      <div class="flex flex-col md:flex-row gap-2">
+        <!-- Net Worth Card -->
+        <div class="flex-1 bg-white p-4 rounded-lg shadow-sm flex flex-col justify-between">
+          <div class="flex justify-between w-full">
+            <div class="text-left">
+              <p class="text-xs text-gray-500">Net Worth</p>
+              <p id="net-worth-value" class="text-3xl font-bold text-gray-800">Loading...</p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-gray-500">Cumulative income</p>
+              <p id="cumulative-income-value"
+                class="text-lg font-bold bg-blue-400 text-white px-2 py-1 rounded-md shadow-md inline-block">
+                Loading...</p>
+            </div>
           </div>
-          <div class="card growth-rate">
-            <h4>Growth Rate</h4>
-            <div id="gaugeChart" style="height: 120px;"></div>
-          </div>
+          <!-- ECharts container for Growth Rate Gauge -->
+          <div id="growth-rate-chart" class="w-full h-40 mt-2 self-center"></div>
         </div>
-        <div class="card pie-chart">
-          <h4>Asset Distribution</h4>
-          <div id="pieChart" style="height: 160px;"></div>
+        <!-- Asset Distribution Card -->
+        <div class="flex-1 bg-white p-4 rounded-lg shadow-sm">
+          <h2 class="font-bold text-base text-gray-800 mb-3">Asset Distribution</h2>
+          <!-- ECharts container for Asset Distribution Pie Chart -->
+          <div id="asset-distribution-chart" class="w-full h-56"></div>
         </div>
       </div>
 
-      <div class="card market-trends">
-        <h4>Market Trends</h4>
-        <div class="tabs">
-          <button>1D</button><button>1W</button><button>1M</button><button>3M</button>
+      <!-- Market Trends Card: Candlestick Chart and Time Range Selector -->
+      <div class="bg-white p-4 rounded-lg shadow-sm">
+        <div class="flex justify-between items-center mb-3">
+          <h2 class="font-bold text-base text-gray-800">Market Trends</h2>
+          <div class="flex items-center gap-1">
+            <!-- Company Search Input -->
+            <input type="text" placeholder="Search for Companies"
+              class="px-2 py-1 border border-gray-300 rounded-md text-xs w-36">
+            <!-- Time Range Selection Buttons -->
+            <div id="time-range-selector" class="flex border border-gray-200 rounded-md">
+              <button data-range="1D" class="px-2 py-1 text-xs hover:bg-gray-100 rounded-l-md btn-active">1D</button>
+              <button data-range="1W" class="px-2 py-1 text-xs hover:bg-gray-100">1W</button>
+              <button data-range="1M" class="px-2 py-1 text-xs hover:bg-gray-100">1M</button>
+              <button data-range="3M" class="px-2 py-1 text-xs hover:bg-gray-100 rounded-r-md">3M</button>
+            </div>
+          </div>
         </div>
-        <div id="lineChart" style="height: 180px;"></div>
+        <!-- ECharts container for Market Trends Candlestick Chart -->
+        <div id="market-trends-chart" class="w-full h-64"></div>
       </div>
 
-      <div class="bottom-section">
-        <div class="card gainers">
-          <h4>Top Gainers</h4>
-          <ul>
-            <li>BID +6.27</li>
-            <li>WST +3.97</li>
-            <li>ICLR +3.77</li>
-            <li>PKI +3.60</li>
-          </ul>
+      <!-- Top Gainers/Losers Cards -->
+      <div class="flex flex-col md:flex-row gap-2">
+        <!-- Top Gainers Section -->
+        <div class="flex-1 bg-white p-3 rounded-lg shadow-sm">
+          <h2 class="font-bold text-base text-gray-800 mb-3">Top gainers</h2>
+          <div id="top-gainers-list" class="space-y-1">
+            <!-- Top Gainer items will be injected here by JavaScript -->
+            <p class="text-gray-500 text-sm">Loading...</p>
+          </div>
         </div>
-        <div class="card losers">
-          <h4>Top Losers</h4>
-          <ul>
-            <li>IRM -2.56</li>
-            <li>LQY -2.37</li>
-            <li>DOV -2.26</li>
-          </ul>
+        <!-- Top Losers Section -->
+        <div class="flex-1 bg-white p-3 rounded-lg shadow-sm">
+          <h2 class="font-bold text-base text-gray-800 mb-3">Top losers</h2>
+          <div id="top-losers-list" class="space-y-1">
+            <!-- Top Loser items will be injected here by JavaScript -->
+            <p class="text-gray-500 text-sm">Loading...</p>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="right">
-      <div class="card investment-list">
-        <h4>Investment List</h4>
-        <ul>
-          <li class="toggle" data-target="stocks">📘 Stocks ¥420.74</li>
-          <ul class="sub" id="stocks"><li>GOOG</li><li>AAPL</li></ul>
-
-          <li class="toggle" data-target="funds">📗 Funds ¥320.37</li>
-          <ul class="sub" id="funds"><li>AAPL</li><li>AAPL</li></ul>
-
-          <li class="toggle" data-target="bonds">📘 Bonds ¥370.37</li>
-          <ul class="sub" id="bonds"><li>AAPL</li></ul>
-
-          <li class="toggle" data-target="cash">📘 Cash ¥123.45</li>
-          <ul class="sub" id="cash"><li>AAPL</li></ul>
-
-          <li class="toggle" data-target="others">📘 Others ¥5.00</li>
-          <ul class="sub" id="others"><li>AAPL</li></ul>
-        </ul>
+    <!-- Right Column: Investment List with Collapsible Categories -->
+    <div class="w-full lg:w-96 flex-shrink-0">
+      <div class="bg-white p-4 rounded-lg shadow-sm">
+        <h2 class="font-bold text-lg text-gray-800 mb-4 px-2">Investment List</h2>
+        <div id="investment-list" class="space-y-2">
+          <!-- Investment categories will be injected here by JavaScript -->
+          <p class="text-gray-500 text-sm px-2">Loading...</p>
+        </div>
       </div>
     </div>
   </main>
 
-  <footer class="footer">
-    <p>📢 Investment Advice: Diversification reduces risk - spread assets across sectors.</p>
+  <!-- Footer Section: Investment Advice Carousel and Risk Warning -->
+  <footer class="mt-2 space-y-1">
+    <div class="bg-blue-600 text-white p-3 rounded-lg shadow-sm flex items-start gap-3">
+      <!-- Info Icon -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <!-- Investment Advice Carousel -->
+      <div class="h-6 overflow-hidden flex-grow">
+        <div id="advice-carousel" class="transition-transform duration-500 ease-in-out">
+          <p class="h-6 leading-6 text-sm"><strong>Investment Advice:</strong> Diversification reduces risk - spread
+            your assets across different sectors.</p>
+          <p class="h-6 leading-6 text-sm"><strong>Long-term View:</strong> Don't panic during market dips; successful
+            investing is often a marathon, not a sprint.</p>
+          <p class="h-6 leading-6 text-sm"><strong>Stay Informed:</strong> Regularly review your portfolio and stay
+            updated on market news and trends.</p>
+        </div>
+      </div>
+    </div>
+    <!-- Risk Warning -->
+    <div class="text-xs text-gray-500 p-3 bg-white rounded-lg shadow-sm">
+      <p><strong>Risk Warning:</strong> The market is risky, so be cautious when investing. The data in this report is
+        for reference only and does not constitute any investment advice. The investment value and its returns may
+        fluctuate, and past performance does not represent future performance.</p>
+    </div>
   </footer>
 
-  <script src="./scripts/main.js"></script>
+</div>
+
+<!-- Link to external JavaScript file -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script src="./scripts/main.js"></script>
 </body>
+
 </html>
