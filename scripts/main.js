@@ -1,4 +1,22 @@
+import { updateMarketChart, refreshMarketTrendsData } from "./charts/marketTrendsChart.js";
+import { getSingleHistoricalAsset } from "./api/assetsHistoryAPI.js";
+
 document.addEventListener('DOMContentLoaded', function () {
+  document.getElementById('date-picker').addEventListener('change', (e) => {
+    let tempSymbol = "AAPL";
+    if (window.dashboardData) {
+      tempSymbol = window.dashboardData.symbol || "AAPL"; // Use stored symbol or default to AAPL
+    }
+    const selector = document.getElementById('time-range-selector');
+    const buttons = selector.querySelectorAll('button');
+    buttons.forEach(btn => btn.classList.remove('btn-active')); 
+    const targetButton = selector.querySelector('button[data-range="3M"]');
+    if (targetButton) {
+      targetButton.classList.add('btn-active');
+    }
+    refreshMarketTrendsData(e.target.value, tempSymbol);
+  });
+
   // --- Set Date Picker to Today's Date ---
   const datePicker = document.getElementById('date-picker');
   if (datePicker) {
@@ -60,126 +78,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // --- Helper functions for Market Trends Chart ---
   // Helper function to split raw candlestick data into categories and values
-  function splitData(rawData) {
-    let categoryData = []; // Dates/Times
-    let values = []; // Open, Close, Low, High values
-    let dataToProcess = JSON.parse(JSON.stringify(rawData)); // Deep copy to avoid modifying original
-    for (let i = 0; i < dataToProcess.length; i++) {
-      categoryData.push(dataToProcess[i].splice(0, 1)[0]); // Extract date/time
-      values.push(dataToProcess[i]); // Remaining values are OHLC
-    }
-    return { categoryData, values };
-  }
-
-  // Helper function to calculate Simple Moving Average (SMA)
-  function calculateMA(dayCount, data) {
-    let result = [];
-    for (let i = 0; i < data.values.length; i++) {
-      if (i < dayCount - 1) { // Need 'dayCount' data points to start calculation
-        result.push(NaN); // Not enough data for initial period
-        continue;
-      }
-      let sum = 0;
-      for (let j = 0; j < dayCount; j++) {
-        sum += data.values[i - j][1]; // Use closing price (index 1) for MA calculation
-      }
-      result.push(+(sum / dayCount).toFixed(2));
-    }
-    return result;
-  }
 
   // 3. Market Trends Candlestick Chart (Shanghai Index, 2015)
-  const marketTrendsChart = echarts.init(document.getElementById('market-trends-chart'));
-  const upColor = '#00da3c'; // Up color (green)
-  const downColor = '#ec0000'; // Down color (red)
+
 
   // Generate mock daily data for a given period
-  function generateDailyData(startDate, endDate, startPrice, volatility) {
-    let data = [];
-    let currentDate = new Date(startDate);
-    let currentPrice = startPrice;
-    const dailyDrift = volatility * 0.05; // Small daily drift to create a trend
 
-    while (currentDate <= endDate) {
-      // Skip weekends (Saturday and Sunday)
-      if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) {
-        // Introduce a slight random drift to currentPrice for a more realistic trend
-        currentPrice += (Math.random() - 0.5) * dailyDrift;
-
-        let open = +(currentPrice + (Math.random() - 0.5) * volatility * 0.2).toFixed(2); // Smaller opening jump
-        let close = +(open + (Math.random() - 0.5) * volatility * 0.5).toFixed(2); // Larger daily movement
-        let high = Math.max(open, close) + Math.random() * volatility * 0.1;
-        let low = Math.min(open, close) - Math.random() * volatility * 0.1;
-
-        // Ensure low is not negative
-        low = Math.max(0, low);
-
-        data.push([
-          currentDate.toISOString().split('T')[0], // YYYY-MM-DD
-          +open.toFixed(2),
-          +close.toFixed(2),
-          +low.toFixed(2),
-          +high.toFixed(2)
-        ]);
-        currentPrice = close; // Next day's base price is today's close
-      }
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-    return data;
-  }
-
-  // Function to filter data for specific ranges relative to a reference end date
-  function filterDataByRange(data, days, referenceEndDate) {
-    const endDate = new Date(referenceEndDate);
-    const startDate = new Date(endDate);
-    startDate.setDate(endDate.getDate() - days);
-
-    return data.filter(item => {
-      const itemDate = new Date(item[0]);
-      return itemDate >= startDate && itemDate <= endDate;
-    });
-  }
-
-  function updateMarketChart(marketTrendsData, range) {
-    const data = splitData(marketTrendsData[range]);
-    const ma5Data = calculateMA(5, data);
-    const ma10Data = calculateMA(10, data);
-    const ma20Data = calculateMA(20, data);
-    const ma30Data = calculateMA(30, data);
-
-    const marketTrendsOption = {
-      tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
-      legend: { // Add legend for Candlestick and MAs
-        data: ['Candlestick', 'MA5', 'MA10', 'MA20', 'MA30'],
-        top: 0, // Position legend at the top
-        selectedMode: 'multiple', // Allow multiple selection
-        itemGap: 10, // Adjust legend item spacing
-        textStyle: { fontSize: 12 } // Adjust legend font size
-      },
-      grid: { left: '10%', right: '10%', bottom: '15%' },
-      xAxis: {
-        type: 'category',
-        data: data.categoryData,
-        axisLabel: {
-          formatter: function (value) {
-            // Format date to YYYY/MM/DD, similar to the image
-            return value.split(' ')[0].replace(/-/g, '/');
-          },
-          fontSize: 10 // Adjust X-axis label font size
-        }
-      },
-      yAxis: { scale: true, splitArea: { show: true }, axisLabel: { fontSize: 10 } }, // Adjust Y-axis label font size
-      dataZoom: [{ type: 'inside', start: 0, end: 100 }, { show: true, type: 'slider', top: '90%', start: 0, end: 100 }],
-      series: [
-        { name: 'Candlestick', type: 'candlestick', data: data.values, itemStyle: { color: upColor, color0: downColor, borderColor: upColor, borderColor0: downColor } },
-        { name: 'MA5', type: 'line', data: ma5Data, smooth: true, lineStyle: { opacity: 0.8, width: 1, color: '#5470C6' } }, // Blue
-        { name: 'MA10', type: 'line', data: ma10Data, smooth: true, lineStyle: { opacity: 0.8, width: 1, color: '#91CC75' } }, // Green
-        { name: 'MA20', type: 'line', data: ma20Data, smooth: true, lineStyle: { opacity: 0.8, width: 1, color: '#FAC858' } }, // Orange
-        { name: 'MA30', type: 'line', data: ma30Data, smooth: true, lineStyle: { opacity: 0.8, width: 1, color: '#EE6666' } }  // Red
-      ]
-    };
-    marketTrendsChart.setOption(marketTrendsOption, true);
-  }
 
   // Event listener for time range selector buttons
   const timeRangeSelector = document.getElementById('time-range-selector');
@@ -341,8 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Simulate fetching all dashboard data from the server
   async function fetchDashboardData() {
     // Simulate network latency
-    await new Promise(resolve => setTimeout(resolve, 100));
-
+    const marketTrendsRep = await refreshMarketTrendsData(datePicker.value, 'AAPL'); // Fetch market trends data for the selected date
     // Mock data for Net Worth and Cumulative Income
     const netWorthValue = 1234567.89;
     const cumulativeIncomeValue = 5678.9;
@@ -433,22 +336,15 @@ document.addEventListener('DOMContentLoaded', function () {
       ]
     };
 
-    // Market Trends data (already generated by functions, just need to include it)
-    const sh2015FullData = generateDailyData(new Date('2015-02-01'), new Date('2015-12-31'), 3200, 50);
-    const referenceDateForMock = new Date('2015-12-02');
-    const marketTrendsData = {
-      '1D': filterDataByRange(sh2015FullData, 1, referenceDateForMock),
-      '1W': filterDataByRange(sh2015FullData, 7, referenceDateForMock),
-      '1M': filterDataByRange(sh2015FullData, 30, referenceDateForMock),
-      '3M': filterDataByRange(sh2015FullData, 90, referenceDateForMock)
-    };
+
 
     return {
+      symbol: 'AAPL',
       netWorth: netWorthValue,
       cumulativeIncome: cumulativeIncomeValue,
       growthRate: growthRateValue,
       investmentData: processedInvestmentData,
-      marketTrendsData: marketTrendsData,
+      marketTrendsData: marketTrendsRep,
       topMoversData: topMoversData
     };
   }
@@ -469,7 +365,7 @@ document.addEventListener('DOMContentLoaded', function () {
     renderInvestmentList(data.investmentData);
 
     // Update Market Trends Chart (initial load with 1D data)
-    updateMarketChart(data.marketTrendsData, '1D'); // Pass marketTrendsData here
+    updateMarketChart(data.marketTrendsData, '3M'); // Pass marketTrendsData here
 
     // Render Top Movers
     renderTopMovers(data.topMoversData);
@@ -479,7 +375,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (e.target.tagName === 'BUTTON') {
         timeRangeSelector.querySelectorAll('button').forEach(btn => btn.classList.remove('btn-active'));
         e.target.classList.add('btn-active');
-        updateMarketChart(window.dashboardData.marketTrendsData, e.target.dataset.range); // Use globally stored data
+        updateMarketChart(window.dashboardData.marketTrendsData, e.target.dataset.range, window.dashboardData.symbol); // Use globally stored data
       }
     });
 
@@ -493,10 +389,4 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('investment-list').innerHTML = '<p class="text-red-500 text-sm px-2">Failed to load investment list.</p>';
   });
 
-  // Adjust chart sizes on window resize for responsiveness
-  window.addEventListener('resize', function () {
-    growthRateChart.resize();
-    assetDistributionChart.resize();
-    marketTrendsChart.resize();
-  });
 });

@@ -78,14 +78,14 @@
           <h2 class="font-bold text-base text-gray-800">Market Trends</h2>
           <div class="flex items-center gap-1">
             <!-- Company Search Input -->
-            <input type="text" placeholder="Search for Companies"
+            <input id= "CompTrendSearch"type="text" placeholder="Search for Companies"
               class="px-2 py-1 border border-gray-300 rounded-md text-xs w-36">
             <!-- Time Range Selection Buttons -->
             <div id="time-range-selector" class="flex border border-gray-200 rounded-md">
-              <button data-range="1D" class="px-2 py-1 text-xs hover:bg-gray-100 rounded-l-md btn-active">1D</button>
+              <button data-range="1D" class="px-2 py-1 text-xs hover:bg-gray-100 rounded-l-md">1D</button>
               <button data-range="1W" class="px-2 py-1 text-xs hover:bg-gray-100">1W</button>
               <button data-range="1M" class="px-2 py-1 text-xs hover:bg-gray-100">1M</button>
-              <button data-range="3M" class="px-2 py-1 text-xs hover:bg-gray-100 rounded-r-md">3M</button>
+              <button data-range="3M" class="px-2 py-1 text-xs hover:bg-gray-100 rounded-r-md btn-active">3M</button>
             </div>
           </div>
         </div>
@@ -159,7 +159,7 @@
 
 <!-- Link to external JavaScript file -->
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
-<script src="./scripts/main.js"></script>
+<script type="module" src="./scripts/main.js"></script>
 </body>
 
 </html>
