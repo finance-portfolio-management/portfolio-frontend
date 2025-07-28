@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finance Portfolio</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- ECharts for charts -->
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <!-- Google Fonts: Inter for a modern and clean typeface -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <!-- Link to external CSS file -->
     <style>
-        /* Custom styles to enhance Tailwind or provide specific overrides */
         body {
-            font-family: 'Inter', sans-serif; /* 全局应用 Inter 字体 */
-            background-color: #f0f2f5; /* 页面背景色为浅灰色 */
-            padding: 0.5rem 0.75rem; /* 调整 body 填充，使其更紧凑 (p-2 md:p-4) */
+            font-family: 'Inter', sans-serif;
+            /* 全局应用 Inter 字体 */
+            background-color: #f0f2f5;
+            /* 页面背景色为浅灰色 */
+            padding: 0.5rem 0.75rem;
+            /* 调整 body 填充，使其更紧凑 (p-2 md:p-4) */
         }
-        @media (min-width: 768px) { /* 针对中等及以上屏幕 */
+
+        @media (min-width: 768px) {
+
+            /* 针对中等及以上屏幕 */
             body {
-                padding: 0.75rem 1rem; /* 调整 body 填充，使其更紧凑 */
+                padding: 0.75rem 1rem;
+                /* 调整 body 填充，使其更紧凑 */
             }
         }
 
@@ -31,11 +36,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 16px; /* 调整内边距，使其更紧凑 */
-            border-bottom: 1px solid #e5e7eb; /* 浅灰色边框用于分隔 */
+            padding: 8px 16px;
+            /* 调整内边距，使其更紧凑 */
+            border-bottom: 1px solid #e5e7eb;
+            /* 浅灰色边框用于分隔 */
         }
+
         .investment-item:last-child {
-            border-bottom: none; /* 最后一个项目无下边框 */
+            border-bottom: none;
+            /* 最后一个项目无下边框 */
         }
 
         /* 可折叠内容的纯 CSS 逻辑 */
@@ -46,12 +55,15 @@
 
         /* 可折叠内容隐藏时的样式 */
         .collapsible-content {
-            max-height: 0; /* 初始隐藏 */
+            max-height: 0;
+            /* 初始隐藏 */
             overflow: hidden;
             /* 保持 max-height 的平滑过渡 */
-            transition: max-height 0.3s ease-out; 
-            background-color: #ffffff; /* 折叠内容背景色为白色 */
-            border-radius: 0 0 0.5rem 0.5rem; /* 圆角底部 */
+            transition: max-height 0.3s ease-out;
+            background-color: #ffffff;
+            /* 折叠内容背景色为白色 */
+            border-radius: 0 0 0.5rem 0.5rem;
+            /* 圆角底部 */
         }
 
         /* 旋转箭头图标的样式 */
@@ -61,20 +73,30 @@
 
         /* 市场趋势时间范围选择器中活动按钮的样式 */
         .btn-active {
-            background-color: #3B82F6 !important; /* Tailwind 的 bg-blue-600 */
-            color: white !important; /* 活动按钮文本为白色 */
+            background-color: #3B82F6 !important;
+            /* Tailwind 的 bg-blue-600 */
+            color: white !important;
+            /* 活动按钮文本为白色 */
         }
+
         /* 日期选择器输入框的自定义样式，使其与整体设计更匹配 */
         input[type="date"] {
-            background-color: #f9fafb; /* 最浅的灰色背景 */
-            border: 1px solid #d1d5db; /* 浅灰色边框 */
-            color: #111827; /* 深色文本 */
-            font-size: 0.875rem; /* 小字号 */
-            border-radius: 0.5rem; /* 圆角 */
-            padding: 0.5rem; /* 内边距 */
+            background-color: #f9fafb;
+            /* 最浅的灰色背景 */
+            border: 1px solid #d1d5db;
+            /* 浅灰色边框 */
+            color: #111827;
+            /* 深色文本 */
+            font-size: 0.875rem;
+            /* 小字号 */
+            border-radius: 0.5rem;
+            /* 圆角 */
+            padding: 0.5rem;
+            /* 内边距 */
         }
     </style>
 </head>
+
 <body class="p-2 md:p-4">
 
     <div class="max-w-screen-2xl mx-auto">
@@ -82,8 +104,10 @@
         <header class="flex justify-between items-center mb-2">
             <div class="flex items-center gap-3">
                 <!-- Financial Icon (SVG) -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
                 <h1 class="text-xl font-bold text-gray-800">Finance Portfolio</h1>
                 <!-- Date Picker Input -->
@@ -91,7 +115,8 @@
             </div>
             <div class="flex items-center gap-3">
                 <span class="font-medium text-gray-700 text-sm">Boss</span>
-                <button class="px-3 py-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
+                <button
+                    class="px-3 py-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
                     Sign out
                 </button>
             </div>
@@ -113,7 +138,9 @@
                             </div>
                             <div class="text-right">
                                 <p class="text-xs text-gray-500">Cumulative income</p>
-                                <p id="cumulative-income-value" class="text-lg font-bold bg-blue-400 text-white px-2 py-1 rounded-md shadow-md inline-block">Loading...</p>
+                                <p id="cumulative-income-value"
+                                    class="text-lg font-bold bg-blue-400 text-white px-2 py-1 rounded-md shadow-md inline-block">
+                                    Loading...</p>
                             </div>
                         </div>
                         <!-- ECharts container for Growth Rate Gauge -->
@@ -133,13 +160,16 @@
                         <h2 class="font-bold text-base text-gray-800">Market Trends</h2>
                         <div class="flex items-center gap-1">
                             <!-- Company Search Input -->
-                            <input type="text" placeholder="Search for Companies" class="px-2 py-1 border border-gray-300 rounded-md text-xs w-36">
+                            <input id="CompTrendSearch" type="text" placeholder="Search for Companies"
+                                class="px-2 py-1 border border-gray-300 rounded-md text-xs w-36">
                             <!-- Time Range Selection Buttons -->
                             <div id="time-range-selector" class="flex border border-gray-200 rounded-md">
-                                <button data-range="1D" class="px-2 py-1 text-xs hover:bg-gray-100 rounded-l-md btn-active">1D</button>
+                                <button data-range="1D"
+                                    class="px-2 py-1 text-xs hover:bg-gray-100 rounded-l-md">1D</button>
                                 <button data-range="1W" class="px-2 py-1 text-xs hover:bg-gray-100">1W</button>
                                 <button data-range="1M" class="px-2 py-1 text-xs hover:bg-gray-100">1M</button>
-                                <button data-range="3M" class="px-2 py-1 text-xs hover:bg-gray-100 rounded-r-md">3M</button>
+                                <button data-range="3M"
+                                    class="px-2 py-1 text-xs hover:bg-gray-100 rounded-r-md btn-active">3M</button>
                             </div>
                         </div>
                     </div>
@@ -179,31 +209,301 @@
                 </div>
             </div>
         </main>
-        
+
         <!-- Footer Section: Investment Advice Carousel and Risk Warning -->
         <footer class="mt-2 space-y-1">
             <div class="bg-blue-600 text-white p-3 rounded-lg shadow-sm flex items-start gap-3">
                 <!-- Info Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 mt-0.5" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
                 <!-- Investment Advice Carousel -->
                 <div class="h-6 overflow-hidden flex-grow">
                     <div id="advice-carousel" class="transition-transform duration-500 ease-in-out">
-                        <p class="h-6 leading-6 text-sm"><strong>Investment Advice:</strong> Diversification reduces risk - spread your assets across different sectors.</p>
-                        <p class="h-6 leading-6 text-sm"><strong>Long-term View:</strong> Don't panic during market dips; successful investing is often a marathon, not a sprint.</p>
-                        <p class="h-6 leading-6 text-sm"><strong>Stay Informed:</strong> Regularly review your portfolio and stay updated on market news and trends.</p>
+                        <p class="h-6 leading-6 text-sm"><strong>Investment Advice:</strong> Diversification reduces
+                            risk - spread
+                            your assets across different sectors.</p>
+                        <p class="h-6 leading-6 text-sm"><strong>Long-term View:</strong> Don't panic during market
+                            dips; successful
+                            investing is often a marathon, not a sprint.</p>
+                        <p class="h-6 leading-6 text-sm"><strong>Stay Informed:</strong> Regularly review your portfolio
+                            and stay
+                            updated on market news and trends.</p>
                     </div>
                 </div>
             </div>
             <!-- Risk Warning -->
             <div class="text-xs text-gray-500 p-3 bg-white rounded-lg shadow-sm">
-                <p><strong>Risk Warning:</strong> The market is risky, so be cautious when investing. The data in this report is for reference only and does not constitute any investment advice. The investment value and its returns may fluctuate, and past performance does not represent future performance.</p>
+                <p><strong>Risk Warning:</strong> The market is risky, so be cautious when investing. The data in this
+                    report is
+                    for reference only and does not constitute any investment advice. The investment value and its
+                    returns may
+                    fluctuate, and past performance does not represent future performance.</p>
             </div>
         </footer>
 
     </div>
 
-    <script>
+    <!-- Link to external JavaScript file -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script type="module">
+        import { getSingleHistoricalAsset } from '../scripts/api/assetsHistoryAPI.js';
+        import { addAssets } from '../scripts/api/assetsAPI.js';
+
         document.addEventListener('DOMContentLoaded', function () {
+            function splitData(rawData) {
+                let categoryData = []; // Dates/Times
+                let values = []; // Open, Close, Low, High values
+                let dataToProcess = JSON.parse(JSON.stringify(rawData)); // Deep copy to avoid modifying original
+
+                for (let i = 0; i < dataToProcess.length; i++) {
+                    categoryData.push(dataToProcess[i].splice(0, 1)[0]); // Extract date/time
+                    values.push(dataToProcess[i]); // Remaining values are OHLC
+                }
+                // console.log('Splitting data:', values);
+
+                return { categoryData, values };
+            }
+
+
+            // Function to filter data for specific ranges relative to a reference end date
+            function filterDataByRange(data, days, referenceEndDate) {
+                const endDate = new Date(referenceEndDate);
+                const startDate = new Date(endDate);
+                startDate.setDate(endDate.getDate() - days);
+
+                return data.filter(item => {
+                    const itemDate = new Date(item[0]);
+                    return itemDate >= startDate && itemDate <= endDate;
+                });
+            }
+            document.getElementById('CompTrendSearch').addEventListener('keydown', async function (event) {
+                if (event.key === 'Enter') {
+                    const currentDate = document.getElementById('date-picker').value;
+
+                    const selector = document.getElementById('time-range-selector');
+                    const buttons = selector.querySelectorAll('button');
+                    buttons.forEach(btn => btn.classList.remove('btn-active')); // 移除所有active
+                    const targetButton = selector.querySelector('button[data-range="3M"]');
+                    if (targetButton) {
+                        targetButton.classList.add('btn-active');
+                    }
+                    await addAssets({
+                        symbol: event.target.value,
+                    }).then(() => {
+                        refreshMarketTrendsData(currentDate, event.target.value);
+
+                    }).catch((error) => {
+                        console.error('Failed to add asset:', error);
+                    })
+
+                    // refreshMarketTrendsData(currentDate, event.target.value);
+                    event.target.value = ''; // 清空输入框
+
+                }
+
+            });
+
+
+
+            async function refreshMarketTrendsData(currentEndDate, symbol) {
+                return new Promise(async (resolve, reject) => {
+                    try {
+                        const date = new Date(currentEndDate);
+                        date.setDate(date.getDate() - 90);
+                        const result = date.toISOString().split("T")[0];
+                        const payload = {
+                            symbol: symbol,
+                            start: result,
+                            end: currentEndDate
+                        };
+
+                        const marketTrendsData = await getSingleHistoricalAsset(payload);
+                        const transformed = marketTrendsData.data.map(item => {
+                            const dateOnly = item.date.split(' ')[0];
+                            return [
+                                dateOnly,
+                                parseFloat(item.open),
+                                parseFloat(item.close),
+                                parseFloat(item.low),
+                                parseFloat(item.high)
+                            ];
+                        });
+
+                        const marketTrendsDataFormat = {
+                            '1D': filterDataByRange(transformed, 1, currentEndDate),
+                            '1W': filterDataByRange(transformed, 7, currentEndDate),
+                            '1M': filterDataByRange(transformed, 30, currentEndDate),
+                            '3M': filterDataByRange(transformed, 90, currentEndDate)
+                        };
+                        if (!window.dashboardData) {
+                            window.dashboardData = {}; // 先初始化对象
+                        }
+
+                        window.dashboardData.marketTrendsData = marketTrendsDataFormat;
+                        window.dashboardData.symbol = symbol; // Store the symbol for later use
+
+
+                        updateMarketChart(marketTrendsDataFormat, '3M', symbol); // Default to 1D view
+                        resolve(marketTrendsDataFormat);
+                    } catch (error) {
+                        console.error('Failed to refresh market trends data:', error);
+                        reject(error);
+                    }
+                });
+
+            }
+
+
+            function updateMarketChart(marketTrendsData, range, symbol = "AAPL") {
+                const upColor = '#00da3c'; // Up color (green)
+                const downColor = '#ec0000'; // Down color (red)
+                const data = splitData(marketTrendsData[range]);
+                const marketTrendsChart = echarts.init(document.getElementById('market-trends-chart'));
+
+                if (data.values.length === 0) {
+                    marketTrendsChart.clear();
+                    marketTrendsChart.setOption({
+                        graphic: [{
+                            type: 'text',
+                            left: 'center',
+                            top: 'middle',
+                            style: {
+                                text: 'No data available for this range',
+                                textAlign: 'center',
+                                fontSize: 20,
+                                fill: '#888'
+                            }
+                        }]
+                    });
+                    return;
+                }
+
+                const marketTrendsOption = {
+                    tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                    title: {
+                        text: `${symbol.toUpperCase()}`,
+                        left: 'left', // Center the title
+                        textStyle: { fontSize: 20, fontWeight: 'bold' } // Adjust title font size and weight
+                    },
+                    legend: { // Add legend for Candlestick and MAs
+                        data: ['Candlestick'],
+                        top: 0, // Position legend at the top
+                        selectedMode: 'multiple', // Allow multiple selection
+                        itemGap: 10, // Adjust legend item spacing
+                        textStyle: { fontSize: 12 } // Adjust legend font size
+                    },
+                    grid: { left: '10%', right: '10%', bottom: '15%' },
+                    xAxis: {
+                        type: 'category',
+                        data: data.categoryData,
+                        axisLabel: {
+                            formatter: function (value) {
+                                // Format date to YYYY/MM/DD, similar to the image
+                                return value.split(' ')[0].replace(/-/g, '/');
+                            },
+                            fontSize: 10 // Adjust X-axis label font size
+                        }
+                    },
+                    yAxis: { scale: true, splitArea: { show: true }, axisLabel: { fontSize: 10 } }, // Adjust Y-axis label font size
+                    dataZoom: [{ type: 'inside', start: 0, end: 100 }, { show: true, type: 'slider', top: '90%', start: 0, end: 100 }],
+                    series: [
+                        { name: 'Candlestick', type: 'candlestick', data: data.values, itemStyle: { color: upColor, color0: downColor, borderColor: upColor, borderColor0: downColor } },
+                    ]
+                };
+
+                marketTrendsChart.setOption(marketTrendsOption, true);
+            }
+            async function getTopGainersAndLosers() {
+                return new Promise(async (resolve, reject) => {
+                    try {
+
+                        const response = await fetch('http://localhost:3000/api/market/top-gainers-losers', {
+                            method: 'GET'
+                        });
+
+
+                        const data = await response.json()
+                        if (!response.ok) {
+                            throw new Error(data.error);
+                        }
+
+
+                        resolve(data);
+
+                    } catch (error) {
+                        console.error('Failed to get assets:', error);
+                        resolve(error);
+                    }
+                });
+            }
+            function renderTopMovers(data) {
+                const topGainersList = document.getElementById('top-gainers-list');
+                const topLosersList = document.getElementById('top-losers-list');
+
+                topGainersList.innerHTML = ''; // Clear existing content
+                topLosersList.innerHTML = ''; // Clear existing content
+
+                data.topGainers.forEach(item => {
+                    const changePrice = Math.abs(parseFloat(item.currentPrice) / (1 + parseFloat(item.growthRate) / 100) - parseFloat(item.currentPrice));
+
+                    const itemHtml = `
+                          <div class="flex items-center justify-between">
+                              <div class="flex flex-col items-start">
+                                  <span class="font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded mb-1 text-sm">${item.symbol}</span>
+                                  <div>
+                                      <p class="font-semibold text-gray-700 text-sm">${item.name}</p>
+                                      <p class="text-xs text-gray-500">${parseFloat(item.currentPrice).toFixed(2)}</p>
+                                  </div>
+                              </div>
+                              <div class="text-right">
+                                  <p class="font-semibold text-green-600 text-sm">${changePrice.toFixed(2)} (${parseFloat(item.growthRate).toFixed(2)}%)</p>
+                                  <div class="h-1.5 w-16 bg-green-200 rounded-full mt-0.5"><div class="h-1.5 bg-green-500 rounded-full" style="width: 80%"></div></div>
+                              </div>
+                          </div>
+                      `;
+                    topGainersList.insertAdjacentHTML('beforeend', itemHtml);
+                });
+
+                data.topLosers.forEach(item => {
+                    // console.log(item);
+                    const changePrice = Math.abs(parseFloat(item.currentPrice) / (1 + parseFloat(item.growthRate) / 100) - parseFloat(item.currentPrice));
+
+                    const itemHtml = `
+                          <div class="flex items-center justify-between">
+                              <div class="flex flex-col items-start">
+                                  <span class="font-bold text-red-600 bg-red-100 px-2 py-1 rounded mb-1 text-sm">${item.symbol}</span>
+                                  <div>
+                                      <p class="font-semibold text-gray-700 text-sm">${item.name}</p>
+                                      <p class="text-xs text-gray-500">${parseFloat(item.currentPrice).toFixed(2)}</p>
+                                  </div>
+                              </div>
+                              <div class="text-right">
+                                  <p class="font-semibold text-red-600 text-sm">${changePrice.toFixed(2)} (${parseFloat(item.growthRate).toFixed(2)}%)</p>
+                                  <div class="h-1.5 w-16 bg-red-200 rounded-full mt-0.5"><div class="h-1.5 bg-red-500 rounded-full" style="width: 80%"></div></div>
+                              </div>
+                          </div>
+                      `;
+                    topLosersList.insertAdjacentHTML('beforeend', itemHtml);
+                });
+            }
+            document.getElementById('date-picker').addEventListener('change', (e) => {
+                let tempSymbol = "AAPL";
+                if (window.dashboardData) {
+                    tempSymbol = window.dashboardData.symbol || "AAPL"; // Use stored symbol or default to AAPL
+                }
+                const selector = document.getElementById('time-range-selector');
+                const buttons = selector.querySelectorAll('button');
+                buttons.forEach(btn => btn.classList.remove('btn-active'));
+                const targetButton = selector.querySelector('button[data-range="3M"]');
+                if (targetButton) {
+                    targetButton.classList.add('btn-active');
+                }
+                refreshMarketTrendsData(e.target.value, tempSymbol);
+            });
+
             // --- Set Date Picker to Today's Date ---
             const datePicker = document.getElementById('date-picker');
             if (datePicker) {
@@ -261,131 +561,9 @@
 
             // 2. Asset Distribution Pie Chart (Nightingale Chart)
             const assetDistributionChart = echarts.init(document.getElementById('asset-distribution-chart'));
-            // assetDistributionOption is dynamically set in renderInvestmentList
+            // 3. Market Trends Candlestick Chart 
 
-            // --- Helper functions for Market Trends Chart ---
-            // Helper function to split raw candlestick data into categories and values
-            function splitData(rawData) {
-                let categoryData = []; // Dates/Times
-                let values = []; // Open, Close, Low, High values
-                let dataToProcess = JSON.parse(JSON.stringify(rawData)); // Deep copy to avoid modifying original
-                for (let i = 0; i < dataToProcess.length; i++) {
-                    categoryData.push(dataToProcess[i].splice(0, 1)[0]); // Extract date/time
-                    values.push(dataToProcess[i]); // Remaining values are OHLC
-                }
-                return { categoryData, values };
-            }
 
-            // Helper function to calculate Simple Moving Average (SMA)
-            function calculateMA(dayCount, data) {
-                let result = [];
-                for (let i = 0; i < data.values.length; i++) {
-                    if (i < dayCount - 1) { // Need 'dayCount' data points to start calculation
-                        result.push(NaN); // Not enough data for initial period
-                        continue;
-                    }
-                    let sum = 0;
-                    for (let j = 0; j < dayCount; j++) {
-                        sum += data.values[i - j][1]; // Use closing price (index 1) for MA calculation
-                    }
-                    result.push(+(sum / dayCount).toFixed(2));
-                }
-                return result;
-            }
-
-            // 3. Market Trends Candlestick Chart (Shanghai Index, 2015)
-            const marketTrendsChart = echarts.init(document.getElementById('market-trends-chart'));
-            const upColor = '#00da3c'; // Up color (green)
-            const downColor = '#ec0000'; // Down color (red)
-            
-            // Generate mock daily data for a given period
-            function generateDailyData(startDate, endDate, startPrice, volatility) {
-                let data = [];
-                let currentDate = new Date(startDate);
-                let currentPrice = startPrice;
-                const dailyDrift = volatility * 0.05; // Small daily drift to create a trend
-
-                while (currentDate <= endDate) {
-                    // Skip weekends (Saturday and Sunday)
-                    if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) {
-                        // Introduce a slight random drift to currentPrice for a more realistic trend
-                        currentPrice += (Math.random() - 0.5) * dailyDrift;
-
-                        let open = +(currentPrice + (Math.random() - 0.5) * volatility * 0.2).toFixed(2); // Smaller opening jump
-                        let close = +(open + (Math.random() - 0.5) * volatility * 0.5).toFixed(2); // Larger daily movement
-                        let high = Math.max(open, close) + Math.random() * volatility * 0.1;
-                        let low = Math.min(open, close) - Math.random() * volatility * 0.1;
-
-                        // Ensure low is not negative
-                        low = Math.max(0, low);
-
-                        data.push([
-                            currentDate.toISOString().split('T')[0], // YYYY-MM-DD
-                            +open.toFixed(2),
-                            +close.toFixed(2),
-                            +low.toFixed(2),
-                            +high.toFixed(2)
-                        ]);
-                        currentPrice = close; // Next day's base price is today's close
-                    }
-                    currentDate.setDate(currentDate.getDate() + 1);
-                }
-                return data;
-            }
-
-            // Function to filter data for specific ranges relative to a reference end date
-            function filterDataByRange(data, days, referenceEndDate) {
-                const endDate = new Date(referenceEndDate);
-                const startDate = new Date(endDate);
-                startDate.setDate(endDate.getDate() - days);
-
-                return data.filter(item => {
-                    const itemDate = new Date(item[0]);
-                    return itemDate >= startDate && itemDate <= endDate;
-                });
-            }
-
-            function updateMarketChart(marketTrendsData, range) {
-                const data = splitData(marketTrendsData[range]);
-                const ma5Data = calculateMA(5, data);
-                const ma10Data = calculateMA(10, data);
-                const ma20Data = calculateMA(20, data);
-                const ma30Data = calculateMA(30, data);
-
-                const marketTrendsOption = {
-                    tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
-                    legend: { // Add legend for Candlestick and MAs
-                        data: ['Candlestick', 'MA5', 'MA10', 'MA20', 'MA30'],
-                        top: 0, // Position legend at the top
-                        selectedMode: 'multiple', // Allow multiple selection
-                        itemGap: 10, // Adjust legend item spacing
-                        textStyle: { fontSize: 12 } // Adjust legend font size
-                    },
-                    grid: { left: '10%', right: '10%', bottom: '15%' },
-                    xAxis: {
-                        type: 'category',
-                        data: data.categoryData,
-                        axisLabel: {
-                            formatter: function(value) {
-                                // Format date to YYYY/MM/DD, similar to the image
-                                return value.split(' ')[0].replace(/-/g, '/'); 
-                            },
-                            fontSize: 10 // Adjust X-axis label font size
-                        }
-                    },
-                    yAxis: { scale: true, splitArea: { show: true }, axisLabel: { fontSize: 10 } }, // Adjust Y-axis label font size
-                    dataZoom: [{ type: 'inside', start: 0, end: 100 }, { show: true, type: 'slider', top: '90%', start: 0, end: 100 }],
-                    series: [
-                        { name: 'Candlestick', type: 'candlestick', data: data.values, itemStyle: { color: upColor, color0: downColor, borderColor: upColor, borderColor0: downColor } },
-                        { name: 'MA5', type: 'line', data: ma5Data, smooth: true, lineStyle: { opacity: 0.8, width: 1, color: '#5470C6' } }, // Blue
-                        { name: 'MA10', type: 'line', data: ma10Data, smooth: true, lineStyle: { opacity: 0.8, width: 1, color: '#91CC75' } }, // Green
-                        { name: 'MA20', type: 'line', data: ma20Data, smooth: true, lineStyle: { opacity: 0.8, width: 1, color: '#FAC858' } }, // Orange
-                        { name: 'MA30', type: 'line', data: ma30Data, smooth: true, lineStyle: { opacity: 0.8, width: 1, color: '#EE6666' } }  // Red
-                    ]
-                };
-                marketTrendsChart.setOption(marketTrendsOption, true);
-            }
-            
             // Event listener for time range selector buttons
             const timeRangeSelector = document.getElementById('time-range-selector');
             timeRangeSelector.addEventListener('click', (e) => {
@@ -394,9 +572,6 @@
                     timeRangeSelector.querySelectorAll('button').forEach(btn => btn.classList.remove('btn-active'));
                     // Add active class to the clicked button
                     e.target.classList.add('btn-active');
-                    // This will be updated to use fetched data after fetchDashboardData resolves
-                    // For now, it relies on a global 'dashboardData' or similar if it's already set.
-                    // It will be properly handled in the main fetchDashboardData().then() block.
                 }
             });
 
@@ -463,7 +638,7 @@
                         setTimeout(() => {
                             content.style.maxHeight = content.scrollHeight + 'px';
                             headerLabel.querySelector('.chevron').classList.add('chevron-rotated');
-                        }, 0); 
+                        }, 0);
                     }
 
                     investmentListContainer.appendChild(sectionContainer);
@@ -496,58 +671,10 @@
                 assetDistributionChart.setOption(assetDistributionOption, true); // true for merging options
             }
 
-            // Render Top Movers (Gainers and Losers)
-            function renderTopMovers(data) {
-                const topGainersList = document.getElementById('top-gainers-list');
-                const topLosersList = document.getElementById('top-losers-list');
-
-                topGainersList.innerHTML = ''; // Clear existing content
-                topLosersList.innerHTML = ''; // Clear existing content
-
-                data.gainers.forEach(item => {
-                    const itemHtml = `
-                        <div class="flex items-center justify-between">
-                            <div class="flex flex-col items-start">
-                                <span class="font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded mb-1 text-sm">${item.symbol}</span>
-                                <div>
-                                    <p class="font-semibold text-gray-700 text-sm">${item.name}</p>
-                                    <p class="text-xs text-gray-500">${item.price.toFixed(2)}</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-semibold text-green-600 text-sm">${item.change.toFixed(2)} (${item.percentageChange.toFixed(2)}%)</p>
-                                <div class="h-1.5 w-16 bg-green-200 rounded-full mt-0.5"><div class="h-1.5 bg-green-500 rounded-full" style="width: ${item.progress}%"></div></div>
-                            </div>
-                        </div>
-                    `;
-                    topGainersList.insertAdjacentHTML('beforeend', itemHtml);
-                });
-
-                data.losers.forEach(item => {
-                    const itemHtml = `
-                        <div class="flex items-center justify-between">
-                            <div class="flex flex-col items-start">
-                                <span class="font-bold text-red-600 bg-red-100 px-2 py-1 rounded mb-1 text-sm">${item.symbol}</span>
-                                <div>
-                                    <p class="font-semibold text-gray-700 text-sm">${item.name}</p>
-                                    <p class="text-xs text-gray-500">${item.price.toFixed(2)}</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-semibold text-red-600 text-sm">${item.change.toFixed(2)} (${item.percentageChange.toFixed(2)}%)</p>
-                                <div class="h-1.5 w-16 bg-red-200 rounded-full mt-0.5"><div class="h-1.5 bg-red-500 rounded-full" style="width: ${item.progress}%"></div></div>
-                            </div>
-                        </div>
-                    `;
-                    topLosersList.insertAdjacentHTML('beforeend', itemHtml);
-                });
-            }
 
             // Simulate fetching all dashboard data from the server
             async function fetchDashboardData() {
-                // Simulate network latency
-                await new Promise(resolve => setTimeout(resolve, 800));
-
+                const marketTrendsRep = await refreshMarketTrendsData(datePicker.value, 'AAPL'); // Fetch market trends data for the selected date
                 // Mock data for Net Worth and Cumulative Income
                 const netWorthValue = 1234567.89;
                 const cumulativeIncomeValue = 5678.9;
@@ -555,31 +682,41 @@
 
                 // Mock data for Investment List (raw data, will be processed)
                 const rawInvestmentListData = [
-                    { category: 'Stocks', color: 'blue', items: [
-                        { name: 'AAPL', value: 300000.00 },
-                        { name: 'GOOG', value: 250000.00 },
-                        { name: 'MSFT', value: 150000.00 },
-                        { name: 'AMZN', value: 40740.00 }
-                    ]},
-                    { category: 'Funds', color: 'cyan', items: [
-                        { name: 'VTI', value: 150000.00 },
-                        { name: 'VXUS', value: 120370.00 },
-                        { name: 'BNDX', value: 100000.00 }
-                    ]},
-                    { category: 'Bonds', color: 'green', items: [
-                        { name: 'BND', value: 150000.00 },
-                        { name: 'AGG', value: 120370.00 },
-                        { name: 'TLT', value: 100000.00 }
-                    ]},
-                    { category: 'Cash', color: 'yellow', items: [
-                        { name: 'USD Savings', value: 80000.00 },
-                        { name: 'EUR Current', value: 43450.00 }
-                    ]},
-                    { category: 'Others', color: 'red', items: [
-                        { name: 'Real Estate', value: 30000.00 },
-                        { name: 'Crypto', value: 20000.00 },
-                        { name: 'Commodities', value: 11720.00 }
-                    ]}
+                    {
+                        category: 'Stocks', color: 'blue', items: [
+                            { name: 'AAPL', value: 300000.00 },
+                            { name: 'GOOG', value: 250000.00 },
+                            { name: 'MSFT', value: 150000.00 },
+                            { name: 'AMZN', value: 40740.00 }
+                        ]
+                    },
+                    {
+                        category: 'Funds', color: 'cyan', items: [
+                            { name: 'VTI', value: 150000.00 },
+                            { name: 'VXUS', value: 120370.00 },
+                            { name: 'BNDX', value: 100000.00 }
+                        ]
+                    },
+                    {
+                        category: 'Bonds', color: 'green', items: [
+                            { name: 'BND', value: 150000.00 },
+                            { name: 'AGG', value: 120370.00 },
+                            { name: 'TLT', value: 100000.00 }
+                        ]
+                    },
+                    {
+                        category: 'Cash', color: 'yellow', items: [
+                            { name: 'USD Savings', value: 80000.00 },
+                            { name: 'EUR Current', value: 43450.00 }
+                        ]
+                    },
+                    {
+                        category: 'Others', color: 'red', items: [
+                            { name: 'Real Estate', value: 30000.00 },
+                            { name: 'Crypto', value: 20000.00 },
+                            { name: 'Commodities', value: 11720.00 }
+                        ]
+                    }
                 ];
 
                 // Calculate total investment value for accurate percentages
@@ -610,41 +747,16 @@
                     };
                 });
 
-                // Mock data for Top Movers
-                const topMoversData = {
-                    gainers: [
-                        { symbol: 'BE', name: 'Bloom Energy Co...', price: 33.00, change: 6.17, percentageChange: 22.90, progress: 80 },
-                        { symbol: 'WST', name: 'West Pharmaceu...', price: 279.10, change: 51.79, percentageChange: 22.76, progress: 75 },
-                        { symbol: 'ICLR', name: 'ICON Public Limi...', price: 165.01, change: 27.12, percentageChange: 19.67, progress: 65 },
-                        { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 1200.50, change: 50.25, percentageChange: 4.37, progress: 90 },
-                        { symbol: 'TSLA', name: 'Tesla Inc.', price: 300.75, change: 15.10, percentageChange: 5.28, progress: 85 }
-                    ],
-                    losers: [
-                        { symbol: 'SIGI', name: 'Selective Insuran...', price: 25.27, change: -7.16, percentageChange: -22.06, progress: 80 },
-                        { symbol: 'LKQ', name: 'LKQ Corporation', price: 31.73, change: -6.88, percentageChange: -17.82, progress: 70 },
-                        { symbol: 'MOH', name: 'Molina Healthcar...', price: 158.22, change: -32.03, percentageChange: -16.83, progress: 60 },
-                        { symbol: 'ZM', name: 'Zoom Video Comm...', price: 65.10, change: -5.20, percentageChange: -7.39, progress: 40 },
-                        { symbol: 'PTON', name: 'Peloton Interactiv...', price: 4.50, change: -0.80, percentageChange: -15.09, progress: 55 }
-                    ]
-                };
-
-                // Market Trends data (already generated by functions, just need to include it)
-                const sh2015FullData = generateDailyData(new Date('2015-02-01'), new Date('2015-12-31'), 3200, 50);
-                const referenceDateForMock = new Date('2015-12-02');
-                const marketTrendsData = {
-                    '1D': filterDataByRange(sh2015FullData, 1, referenceDateForMock),
-                    '1W': filterDataByRange(sh2015FullData, 7, referenceDateForMock),
-                    '1M': filterDataByRange(sh2015FullData, 30, referenceDateForMock),
-                    '3M': filterDataByRange(sh2015FullData, 90, referenceDateForMock)
-                };
+                const topMoversData = await getTopGainersAndLosers(); // Fetch top gainers and losers from AP
 
                 return {
+                    symbol: 'AAPL',
                     netWorth: netWorthValue,
                     cumulativeIncome: cumulativeIncomeValue,
                     growthRate: growthRateValue,
                     investmentData: processedInvestmentData,
-                    marketTrendsData: marketTrendsData,
-                    topMoversData: topMoversData
+                    marketTrendsData: marketTrendsRep,
+                    topMoversData: topMoversData.data
                 };
             }
 
@@ -664,7 +776,7 @@
                 renderInvestmentList(data.investmentData);
 
                 // Update Market Trends Chart (initial load with 1D data)
-                updateMarketChart(data.marketTrendsData, '1D'); // Pass marketTrendsData here
+                updateMarketChart(data.marketTrendsData, '3M'); // Pass marketTrendsData here
 
                 // Render Top Movers
                 renderTopMovers(data.topMoversData);
@@ -672,9 +784,7 @@
                 // Event listener for time range selector buttons (updated to use fetched data)
                 timeRangeSelector.addEventListener('click', (e) => {
                     if (e.target.tagName === 'BUTTON') {
-                        timeRangeSelector.querySelectorAll('button').forEach(btn => btn.classList.remove('btn-active'));
-                        e.target.classList.add('btn-active');
-                        updateMarketChart(window.dashboardData.marketTrendsData, e.target.dataset.range); // Use globally stored data
+                        updateMarketChart(window.dashboardData.marketTrendsData, e.target.dataset.range, window.dashboardData.symbol); // Use globally stored data
                     }
                 });
 
@@ -688,13 +798,8 @@
                 document.getElementById('investment-list').innerHTML = '<p class="text-red-500 text-sm px-2">Failed to load investment list.</p>';
             });
 
-            // Adjust chart sizes on window resize for responsiveness
-            window.addEventListener('resize', function() {
-                growthRateChart.resize();
-                assetDistributionChart.resize();
-                marketTrendsChart.resize();
-            });
         });
     </script>
 </body>
+
 </html>
