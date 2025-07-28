@@ -1,12 +1,12 @@
 export async function getSingleHistoricalAsset(payload) {
     return new Promise(async (resolve, reject) => {
         try {
-            if (!payload || !payload.symbol || !payload.start || !payload.end || !payload.interval) {
-                throw new Error('Invalid payload: symbol, start, end, and interval are required');
+            if (!payload || !payload.symbol || !payload.start || !payload.end) {
+                throw new Error('Invalid payload: symbol, start and end are required');
             }
 
             const response = await fetch(
-                `http://localhost:3000/api/assets/${payload.symbol}/historical?start=${payload.start}&end=${payload.end}&interval=${payload.interval}`,
+                `http://localhost:3000/api/assets/${payload.symbol}/historical?start=${payload.start}&end=${payload.end}&interval=1d`,
                 {
                     method: 'get'
                 });
