@@ -1,6 +1,7 @@
 import { updateMarketChart, refreshMarketTrendsData } from "./charts/marketTrendsChart.js";
 import { getTopGainersAndLosers } from "./api/assetsOverallAPI.js";
 import { renderTopMovers } from "./components/topMovers.js";
+import { addAssets } from "./api/assetsAPI.js";
 
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('date-picker').addEventListener('change', (e) => {
@@ -188,6 +189,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Simulate fetching all dashboard data from the server
   async function fetchDashboardData() {
+    await addAssets({symbol: "AAPL"});
+
     const marketTrendsRep = await refreshMarketTrendsData(datePicker.value, 'AAPL'); // Fetch market trends data for the selected date
     // Mock data for Net Worth and Cumulative Income
     const netWorthValue = 1234567.89;
