@@ -1,8 +1,8 @@
 export async function addAssets(payload) {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!payload || !payload.symbol || !payload.type) {
-        throw new Error('Symbol and type are required to add an asset');
+      if (!payload || !payload.symbol) {
+        throw new Error('Symbol is required to add an asset');
       }
 
       const response = await fetch('http://localhost:3000/api/assets', {

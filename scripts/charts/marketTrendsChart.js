@@ -1,4 +1,5 @@
 import { getSingleHistoricalAsset } from '../api/assetsHistoryAPI.js';
+import { addAssets } from '../api/assetsAPI.js';
 function splitData(rawData) {
     let categoryData = []; // Dates/Times
     let values = []; // Open, Close, Low, High values
@@ -25,23 +26,35 @@ function filterDataByRange(data, days, referenceEndDate) {
         return itemDate >= startDate && itemDate <= endDate;
     });
 }
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('CompTrendSearch').addEventListener('keydown', async function (event) {
+        if (event.key === 'Enter') {
+            const currentDate = document.getElementById('date-picker').value;
 
-document.getElementById('CompTrendSearch').addEventListener('keydown', function (event) {
-    if (event.key === 'Enter') {
-        const currentDate = document.getElementById('date-picker').value;
+            const selector = document.getElementById('time-range-selector');
+            const buttons = selector.querySelectorAll('button');
+            buttons.forEach(btn => btn.classList.remove('btn-active')); // 移除所有active
+            const targetButton = selector.querySelector('button[data-range="3M"]');
+            if (targetButton) {
+                targetButton.classList.add('btn-active');
+            }
+            await addAssets({
+                symbol: event.target.value,
+            }).then(() => { 
+                refreshMarketTrendsData(currentDate, event.target.value);
 
-        const selector = document.getElementById('time-range-selector');
-        const buttons = selector.querySelectorAll('button');
-        buttons.forEach(btn => btn.classList.remove('btn-active')); // 移除所有active
-        const targetButton = selector.querySelector('button[data-range="3M"]');
-        if (targetButton) {
-            targetButton.classList.add('btn-active');
+            }).catch((error) => {
+                console.error('Failed to add asset:', error);
+            })
+
+            // refreshMarketTrendsData(currentDate, event.target.value);
+            event.target.value = ''; // 清空输入框
+
         }
+    });
 
-        refreshMarketTrendsData(currentDate, event.target.value);
-        
-    }
 });
+
 
 
 export async function refreshMarketTrendsData(currentEndDate, symbol) {
@@ -74,7 +87,6 @@ export async function refreshMarketTrendsData(currentEndDate, symbol) {
                 '1M': filterDataByRange(transformed, 30, currentEndDate),
                 '3M': filterDataByRange(transformed, 90, currentEndDate)
             };
-            // console.log('Market Trends Data:', marketTrendsDataFormat);
             if (!window.dashboardData) {
                 window.dashboardData = {}; // 先初始化对象
             }
@@ -121,7 +133,7 @@ export function updateMarketChart(marketTrendsData, range, symbol = "AAPL") {
     const marketTrendsOption = {
         tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
         title: {
-            text: `${symbol}`,
+            text: `${symbol.toUpperCase()}`,
             left: 'left', // Center the title
             textStyle: { fontSize: 20, fontWeight: 'bold' } // Adjust title font size and weight
         },
