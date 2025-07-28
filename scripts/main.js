@@ -1,5 +1,6 @@
 import { updateMarketChart, refreshMarketTrendsData } from "./charts/marketTrendsChart.js";
-import { getSingleHistoricalAsset } from "./api/assetsHistoryAPI.js";
+import { getTopGainersAndLosers } from "./api/assetsOverallAPI.js";
+import { renderTopMovers } from "./components/topMovers.js";
 
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('date-picker').addEventListener('change', (e) => {
@@ -9,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     const selector = document.getElementById('time-range-selector');
     const buttons = selector.querySelectorAll('button');
-    buttons.forEach(btn => btn.classList.remove('btn-active')); 
+    buttons.forEach(btn => btn.classList.remove('btn-active'));
     const targetButton = selector.querySelector('button[data-range="3M"]');
     if (targetButton) {
       targetButton.classList.add('btn-active');
@@ -74,15 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 2. Asset Distribution Pie Chart (Nightingale Chart)
   const assetDistributionChart = echarts.init(document.getElementById('asset-distribution-chart'));
-  // assetDistributionOption is dynamically set in renderInvestmentList
-
-  // --- Helper functions for Market Trends Chart ---
-  // Helper function to split raw candlestick data into categories and values
-
-  // 3. Market Trends Candlestick Chart (Shanghai Index, 2015)
-
-
-  // Generate mock daily data for a given period
+  // 3. Market Trends Candlestick Chart 
 
 
   // Event listener for time range selector buttons
@@ -93,9 +86,6 @@ document.addEventListener('DOMContentLoaded', function () {
       timeRangeSelector.querySelectorAll('button').forEach(btn => btn.classList.remove('btn-active'));
       // Add active class to the clicked button
       e.target.classList.add('btn-active');
-      // This will be updated to use fetched data after fetchDashboardData resolves
-      // For now, it relies on a global 'dashboardData' or similar if it's already set.
-      // It will be properly handled in the main fetchDashboardData().then() block.
     }
   });
 
@@ -195,56 +185,9 @@ document.addEventListener('DOMContentLoaded', function () {
     assetDistributionChart.setOption(assetDistributionOption, true); // true for merging options
   }
 
-  // Render Top Movers (Gainers and Losers)
-  function renderTopMovers(data) {
-    const topGainersList = document.getElementById('top-gainers-list');
-    const topLosersList = document.getElementById('top-losers-list');
-
-    topGainersList.innerHTML = ''; // Clear existing content
-    topLosersList.innerHTML = ''; // Clear existing content
-
-    data.gainers.forEach(item => {
-      const itemHtml = `
-                        <div class="flex items-center justify-between">
-                            <div class="flex flex-col items-start">
-                                <span class="font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded mb-1 text-sm">${item.symbol}</span>
-                                <div>
-                                    <p class="font-semibold text-gray-700 text-sm">${item.name}</p>
-                                    <p class="text-xs text-gray-500">${item.price.toFixed(2)}</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-semibold text-green-600 text-sm">${item.change.toFixed(2)} (${item.percentageChange.toFixed(2)}%)</p>
-                                <div class="h-1.5 w-16 bg-green-200 rounded-full mt-0.5"><div class="h-1.5 bg-green-500 rounded-full" style="width: ${item.progress}%"></div></div>
-                            </div>
-                        </div>
-                    `;
-      topGainersList.insertAdjacentHTML('beforeend', itemHtml);
-    });
-
-    data.losers.forEach(item => {
-      const itemHtml = `
-                        <div class="flex items-center justify-between">
-                            <div class="flex flex-col items-start">
-                                <span class="font-bold text-red-600 bg-red-100 px-2 py-1 rounded mb-1 text-sm">${item.symbol}</span>
-                                <div>
-                                    <p class="font-semibold text-gray-700 text-sm">${item.name}</p>
-                                    <p class="text-xs text-gray-500">${item.price.toFixed(2)}</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-semibold text-red-600 text-sm">${item.change.toFixed(2)} (${item.percentageChange.toFixed(2)}%)</p>
-                                <div class="h-1.5 w-16 bg-red-200 rounded-full mt-0.5"><div class="h-1.5 bg-red-500 rounded-full" style="width: ${item.progress}%"></div></div>
-                            </div>
-                        </div>
-                    `;
-      topLosersList.insertAdjacentHTML('beforeend', itemHtml);
-    });
-  }
 
   // Simulate fetching all dashboard data from the server
   async function fetchDashboardData() {
-    // Simulate network latency
     const marketTrendsRep = await refreshMarketTrendsData(datePicker.value, 'AAPL'); // Fetch market trends data for the selected date
     // Mock data for Net Worth and Cumulative Income
     const netWorthValue = 1234567.89;
@@ -318,25 +261,7 @@ document.addEventListener('DOMContentLoaded', function () {
       };
     });
 
-    // Mock data for Top Movers
-    const topMoversData = {
-      gainers: [
-        { symbol: 'BE', name: 'Bloom Energy Co...', price: 33.00, change: 6.17, percentageChange: 22.90, progress: 80 },
-        { symbol: 'WST', name: 'West Pharmaceu...', price: 279.10, change: 51.79, percentageChange: 22.76, progress: 75 },
-        { symbol: 'ICLR', name: 'ICON Public Limi...', price: 165.01, change: 27.12, percentageChange: 19.67, progress: 65 },
-        { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 1200.50, change: 50.25, percentageChange: 4.37, progress: 90 },
-        { symbol: 'TSLA', name: 'Tesla Inc.', price: 300.75, change: 15.10, percentageChange: 5.28, progress: 85 }
-      ],
-      losers: [
-        { symbol: 'SIGI', name: 'Selective Insuran...', price: 25.27, change: -7.16, percentageChange: -22.06, progress: 80 },
-        { symbol: 'LKQ', name: 'LKQ Corporation', price: 31.73, change: -6.88, percentageChange: -17.82, progress: 70 },
-        { symbol: 'MOH', name: 'Molina Healthcar...', price: 158.22, change: -32.03, percentageChange: -16.83, progress: 60 },
-        { symbol: 'ZM', name: 'Zoom Video Comm...', price: 65.10, change: -5.20, percentageChange: -7.39, progress: 40 },
-        { symbol: 'PTON', name: 'Peloton Interactiv...', price: 4.50, change: -0.80, percentageChange: -15.09, progress: 55 }
-      ]
-    };
-
-
+    const topMoversData = await getTopGainersAndLosers(); // Fetch top gainers and losers from AP
 
     return {
       symbol: 'AAPL',
@@ -345,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function () {
       growthRate: growthRateValue,
       investmentData: processedInvestmentData,
       marketTrendsData: marketTrendsRep,
-      topMoversData: topMoversData
+      topMoversData: topMoversData.data
     };
   }
 
@@ -373,8 +298,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Event listener for time range selector buttons (updated to use fetched data)
     timeRangeSelector.addEventListener('click', (e) => {
       if (e.target.tagName === 'BUTTON') {
-        timeRangeSelector.querySelectorAll('button').forEach(btn => btn.classList.remove('btn-active'));
-        e.target.classList.add('btn-active');
         updateMarketChart(window.dashboardData.marketTrendsData, e.target.dataset.range, window.dashboardData.symbol); // Use globally stored data
       }
     });
