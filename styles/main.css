@@ -1,81 +1,275 @@
 body {
   font-family: 'Inter', sans-serif;
-  /* 全局应用 Inter 字体 */
+  /* Apply Inter font globally */
   background-color: #f0f2f5;
-  /* 页面背景色为浅灰色 */
+  /* Light grey background color for the page */
   padding: 0.5rem 0.75rem;
-  /* 调整 body 填充，使其更紧凑 (p-2 md:p-4) */
+  /* Adjust body padding for a more compact look (p-2 md:p-4) */
 }
 
 @media (min-width: 768px) {
 
-  /* 针对中等及以上屏幕 */
+  /* For medium and larger screens */
   body {
     padding: 0.75rem 1rem;
-    /* 调整 body 填充，使其更紧凑 */
+    /* Adjust body padding for a more compact look */
   }
 }
 
-/* 投资类别内可折叠列表项的样式 */
-.investment-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 16px;
-  /* 调整内边距，使其更紧凑 */
-  border-bottom: 1px solid #e5e7eb;
-  /* 浅灰色边框用于分隔 */
-}
+/* Styles for collapsible list items within investment categories */
+/* Removed .investment-item as it's now wrapped by .swipe-container and .investment-item-content */
 
-.investment-item:last-child {
-  border-bottom: none;
-  /* 最后一个项目无下边框 */
-}
-
-/* 可折叠内容的纯 CSS 逻辑 */
-/* 隐藏 checkbox 输入框 */
+/* Pure CSS logic for collapsible content */
+/* Hide checkbox input */
 .collapsible-checkbox {
   display: none;
 }
 
-/* 可折叠内容隐藏时的样式 */
+/* Styles when collapsible content is hidden */
 .collapsible-content {
   max-height: 0;
-  /* 初始隐藏 */
+  /* Initially hidden */
   overflow: hidden;
-  /* 保持 max-height 的平滑过渡 */
+  /* Maintain smooth transition for max-height */
   transition: max-height 0.3s ease-out;
   background-color: #ffffff;
-  /* 折叠内容背景色为白色 */
+  /* Collapsible content background color is white */
   border-radius: 0 0 0.5rem 0.5rem;
-  /* 圆角底部 */
+  /* Rounded bottom corners */
+  padding: 0.5rem;
+  /* Added padding to ensure spacing around items */
 }
 
-/* 旋转箭头图标的样式 */
+/* Styles for rotated chevron icon */
 .chevron-rotated {
   transform: rotate(180deg);
 }
 
-/* 市场趋势时间范围选择器中活动按钮的样式 */
+/* Styles for active button in market trends time range selector */
 .btn-active {
   background-color: #3B82F6 !important;
-  /* Tailwind 的 bg-blue-600 */
+  /* Tailwind's bg-blue-600 */
   color: white !important;
-  /* 活动按钮文本为白色 */
+  /* Active button text is white */
 }
 
-/* 日期选择器输入框的自定义样式，使其与整体设计更匹配 */
+/* Custom styles for date picker input to match overall design */
 input[type="date"] {
   background-color: #f9fafb;
-  /* 最浅的灰色背景 */
+  /* Lightest grey background */
   border: 1px solid #d1d5db;
-  /* 浅灰色边框 */
+  /* Light grey border */
   color: #111827;
-  /* 深色文本 */
+  /* Dark text */
   font-size: 0.875rem;
-  /* 小字号 */
+  /* Small font size */
   border-radius: 0.5rem;
-  /* 圆角 */
+  /* Rounded corners */
   padding: 0.5rem;
-  /* 内边距 */
+  /* Inner padding */
+}
+
+/* Modal specific styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  /* Ensure it's on top of everything */
+  opacity: 0;
+  /* Start hidden */
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 600px;
+  /* Increased max-width for more content */
+  transform: translateY(-20px);
+  /* Start slightly above */
+  transition: transform 0.3s ease-in-out;
+  position: relative;
+  /* For spinner positioning */
+}
+
+.modal-overlay.show .modal-content {
+  transform: translateY(0);
+  /* Slide into place */
+}
+
+/* Table styles within modal */
+.stock-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+}
+
+.stock-table th,
+.stock-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.stock-table th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.stock-table tbody tr:hover {
+  background-color: #f3f4f6;
+  cursor: pointer;
+}
+
+.stock-table tbody tr.selected {
+  background-color: #e0f2fe;
+  /* Light blue for selected row */
+  border-left: 4px solid #3b82f6;
+  /* Blue border for selected row */
+}
+
+/* Loading spinner styles */
+.spinner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 0.75rem;
+  /* Match modal border-radius */
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Success message styles */
+.success-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #d1fae5;
+  /* Light green */
+  color: #065f46;
+  /* Dark green text */
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 11;
+  text-align: center;
+  font-weight: 600;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.success-message.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* New styles for swipe-to-delete/sell */
+.swipe-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  /* Match parent container's rounded corners */
+  margin-bottom: 0.5rem;
+  /* Space between swipeable items */
+  border: 1px solid #e5e7eb;
+  /* Add border to the container */
+}
+
+.collapsible-content .swipe-container:last-child {
+  margin-bottom: 0;
+  /* Remove margin from the last item */
+}
+
+.investment-item-content {
+  position: relative;
+  z-index: 1;
+  /* Ensure it's above the sell button */
+  background-color: #ffffff;
+  /* Ensure background is solid */
+  width: 100%;
+  /* Take full width of its container */
+  padding: 8px 16px;
+  /* Original padding */
+  box-sizing: border-box;
+  /* Include padding and border in width */
+  transition: transform 0.3s ease-in-out;
+  /* Smooth slide transition */
+}
+
+/* When swiped/right-clicked, move the content to the left */
+.swipe-container.swiped .investment-item-content {
+  transform: translateX(-80px);
+  /* Adjust based on sell button width */
+}
+
+.sell-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 80px;
+  /* Width of the sell button */
+  background-color: #ef4444;
+  /* Red color */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(100%);
+  /* Initially hidden to the right */
+  transition: transform 0.3s ease-in-out;
+  border-radius: 0 0.5rem 0.5rem 0;
+  /* Rounded right corners */
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* When swiped, show the sell button */
+.swipe-container.swiped .sell-btn {
+  transform: translateX(0);
 }
