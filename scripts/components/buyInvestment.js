@@ -6,7 +6,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const stockSearchInput = document.getElementById('stock-search-input');
     const stockDetailsTableBody = document.querySelector('#stock-details-table tbody');
     const purchaseAmountInput = document.getElementById('purchase-amount-input');
-    const numSharesDisplay = document.getElementById('num-shares-display');
+    // Changed from p tag to input for shares
+    const numSharesInput = document.getElementById('num-shares-input');
     const paymentMethodSelect = document.getElementById('payment-method-select');
     const loadingSpinnerOverlay = document.getElementById('loading-spinner-overlay');
     const successMessageOverlay = document.getElementById('success-message-overlay');
@@ -17,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const mockStocks = [
         { symbol: 'AAPL', name: 'Apple Inc.', exchange: 'NASDAQ', currentPrice: 175.50, updateTime: '2025-07-29 10:30:00' },
         { symbol: 'GOOG', name: 'Alphabet Inc. (Class C)', exchange: 'NASDAQ', currentPrice: 150.25, updateTime: '2025-07-29 10:31:00' },
-        { symbol: 'MSFT', name: 'Microsoft Corp.', exchange: 'NASDAQ', currentPrice: 450.75, updateTime: '2025-07-29 10:32:00' },
+        { symbol: 'MSFT', name: 'Microsoft Corp.', exchange: 450.75, updateTime: '2025-07-29 10:32:00' },
         { symbol: 'AMZN', name: 'Amazon.com Inc.', exchange: 'NASDAQ', currentPrice: 180.10, updateTime: '2025-07-29 10:33:00' },
         { symbol: 'TSLA', name: 'Tesla Inc.', exchange: 'NASDAQ', currentPrice: 280.00, updateTime: '2025-07-29 10:34:00' },
         { symbol: 'NVDA', name: 'NVIDIA Corp.', exchange: 'NASDAQ', currentPrice: 1200.00, updateTime: '2025-07-29 10:35:00' },
@@ -51,25 +52,44 @@ document.addEventListener('DOMContentLoaded', function () {
                 selectedStock = stock;
                 // Enable purchase inputs
                 purchaseAmountInput.disabled = false;
-                calculateShares(); // Recalculate shares if amount already entered
+                numSharesInput.disabled = false;
+                // Clear previous values when a new stock is selected
+                purchaseAmountInput.value = '';
+                numSharesInput.value = '';
             });
             stockDetailsTableBody.appendChild(row);
         });
     }
 
-    // Function to calculate and display number of shares for add modal
-    function calculateShares() {
+    // Function to calculate shares based on amount
+    function calculateSharesFromAmount() {
         if (selectedStock && purchaseAmountInput.value) {
             const amount = parseFloat(purchaseAmountInput.value);
             const price = selectedStock.currentPrice;
             if (amount > 0 && price > 0) {
                 const shares = amount / price;
-                numSharesDisplay.textContent = `${shares.toFixed(4)} Shares`; // Display with more precision
+                numSharesInput.value = shares.toFixed(4); // Update shares input
             } else {
-                numSharesDisplay.textContent = '0 Shares';
+                numSharesInput.value = '';
             }
         } else {
-            numSharesDisplay.textContent = '0 Shares';
+            numSharesInput.value = '';
+        }
+    }
+
+    // Function to calculate amount based on shares
+    function calculateAmountFromShares() {
+        if (selectedStock && numSharesInput.value) {
+            const shares = parseFloat(numSharesInput.value);
+            const price = selectedStock.currentPrice;
+            if (shares > 0 && price > 0) {
+                const amount = shares * price;
+                purchaseAmountInput.value = amount.toFixed(2); // Update amount input
+            } else {
+                purchaseAmountInput.value = '';
+            }
+        } else {
+            purchaseAmountInput.value = '';
         }
     }
 
@@ -104,7 +124,8 @@ document.addEventListener('DOMContentLoaded', function () {
         stockDetailsTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-gray-500 py-4">Please search for a stock to display details</td></tr>`;
         purchaseAmountInput.value = '';
         purchaseAmountInput.disabled = true;
-        numSharesDisplay.textContent = '0 Shares';
+        numSharesInput.value = ''; // Reset shares input
+        numSharesInput.disabled = true; // Disable shares input
         selectedStock = null;
         hideSpinner();
         successMessageOverlay.classList.add('hidden');
@@ -134,13 +155,16 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             stockDetailsTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-gray-500 py-4">Please search for a stock to display details</td></tr>`;
             purchaseAmountInput.disabled = true;
-            numSharesDisplay.textContent = '0 Shares';
+            numSharesInput.disabled = true; // Disable shares input
+            purchaseAmountInput.value = '';
+            numSharesInput.value = '';
             selectedStock = null;
         }
     });
 
-    // Event listener for purchase amount input in add modal
-    purchaseAmountInput.addEventListener('input', calculateShares);
+    // Event listeners for two-way calculation
+    purchaseAmountInput.addEventListener('input', calculateSharesFromAmount);
+    numSharesInput.addEventListener('input', calculateAmountFromShares);
 
     // Event listener for the "Buy" button inside the add modal
     confirmBuyBtn.addEventListener('click', () => {
@@ -150,8 +174,10 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
         const amount = parseFloat(purchaseAmountInput.value);
-        if (isNaN(amount) || amount <= 0) {
-            console.error('Please enter a valid purchase amount.');
+        const shares = parseFloat(numSharesInput.value);
+
+        if (isNaN(amount) || amount <= 0 || isNaN(shares) || shares <= 0) {
+            console.error('Please enter valid purchase amount and shares.');
             // In a real app, display a user-friendly message on the modal
             return;
         }
@@ -162,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
         setTimeout(() => {
             hideSpinner(); // Hide spinner
             showSuccessMessage(); // Show success message
-            console.log(`Successfully purchased ${selectedStock.symbol} for $${amount.toFixed(2)} using ${paymentMethodSelect.value}`);
+            console.log(`Successfully purchased ${shares.toFixed(4)} shares of ${selectedStock.symbol} for $${amount.toFixed(2)} using ${paymentMethodSelect.value}`);
             // After success message disappears, close the modal
             setTimeout(() => {
                 closeAddInvestmentModal();
