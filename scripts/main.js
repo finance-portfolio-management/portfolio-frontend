@@ -1,7 +1,11 @@
+// main.js
 import { updateMarketChart, refreshMarketTrendsData } from "./charts/marketTrendsChart.js";
 import { getTopGainersAndLosers } from "./api/assetsOverallAPI.js";
 import { renderTopMovers } from "./components/topMovers.js";
 import { addAssets } from "./api/assetsAPI.js";
+// These are now imported directly in the HTML, so no need to import them here.
+import "./components/buyInvestment.js";
+import "./components/sellInvestment.js"
 
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('date-picker').addEventListener('change', (e) => {
@@ -91,13 +95,13 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Render Investment List
-  function renderInvestmentList(data) {
+  window.renderInvestmentList = function(data) { // Made global for access from sellInvestment.js
     const investmentListContainer = document.getElementById('investment-list');
     investmentListContainer.innerHTML = ''; // Clear existing content
 
     const pieChartData = []; // Data for ECharts pie chart
 
-    data.forEach((group, index) => {
+    data.forEach((group, groupIndex) => { // Added groupIndex
       const sectionContainer = document.createElement('div');
       const checkboxId = `collapsible-${group.category.toLowerCase().replace(/\s/g, '-')}`;
 
@@ -114,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-${group.color}-500"></span>
                             <span class="font-bold text-gray-800 text-sm">${group.category}</span>
-                            <span class="text-xs text-gray-600">¥${group.categoryValue.toFixed(2)}</span>
+                            <span class="text-xs text-gray-600">$${group.categoryValue.toFixed(2)}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="font-semibold text-gray-700 text-sm">${group.categoryPercentage.toFixed(2)}%</span>
@@ -125,14 +129,66 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const content = document.createElement('div');
       content.className = 'collapsible-content';
-      group.items.forEach(item => {
-        const itemEl = document.createElement('div');
-        itemEl.className = 'investment-item';
-        itemEl.innerHTML = `
+      group.items.forEach((item, itemIndex) => { // Added itemIndex
+        // Create the swipe container
+        const swipeContainer = document.createElement('div');
+        // Apply border-bottom to swipe-container instead of item-content
+        swipeContainer.className = 'swipe-container relative overflow-hidden';
+        swipeContainer.dataset.groupIndex = groupIndex; // Store indices for deletion
+        swipeContainer.dataset.itemIndex = itemIndex;
+        swipeContainer.dataset.symbol = item.name; // Store symbol for sell modal
+        swipeContainer.dataset.value = item.value; // Store current value for sell modal
+
+        // Create the content div (original investment-item)
+        const itemContentDiv = document.createElement('div');
+        itemContentDiv.className = 'investment-item-content transition-transform duration-300 ease-in-out flex justify-between items-center p-2 bg-white rounded-md';
+        itemContentDiv.innerHTML = `
                             <span class="font-medium text-gray-700 text-sm">${item.name}</span>
-                            <span class="text-xs text-gray-500">¥${item.value.toFixed(2)} (${item.percentage.toFixed(2)}%)</span>
+                            <span class="text-xs text-gray-500">$${item.value.toFixed(2)} (${item.percentage.toFixed(2)}%)</span>
                         `;
-        content.appendChild(itemEl);
+
+        // Create the sell button (formerly delete)
+        const sellBtn = document.createElement('button');
+        sellBtn.className = 'sell-btn absolute right-0 top-0 h-full bg-red-600 text-white px-4 py-2 rounded-r-md flex items-center justify-content-center transform translate-x-full transition-transform duration-300 ease-in-out';
+        sellBtn.textContent = 'Sell';
+
+        swipeContainer.appendChild(itemContentDiv);
+        swipeContainer.appendChild(sellBtn);
+
+        content.appendChild(swipeContainer); // Append the swipeContainer to the collapsible content
+
+        // --- Swipe and Right-Click Logic for each item ---
+        let startX = 0;
+        let currentX = 0;
+        let isSwiping = false;
+        const swipeThreshold = 50; // Pixels to trigger swipe
+
+        // Prevent default right-click menu and show sell button
+        itemContentDiv.addEventListener('contextmenu', (e) => {
+          e.preventDefault(); // Prevent default context menu
+          // Close any other open swipe items
+          document.querySelectorAll('.swipe-container.swiped').forEach(openItem => {
+            if (openItem !== swipeContainer) {
+              openItem.classList.remove('swiped');
+              openItem.querySelector('.investment-item-content').style.transform = `translateX(0px)`;
+            }
+          });
+          swipeContainer.classList.toggle('swiped');
+        });
+
+        // Click listener for the sell button
+        sellBtn.addEventListener('click', () => {
+          const targetGroupIndex = parseInt(swipeContainer.dataset.groupIndex);
+          const targetItemIndex = parseInt(swipeContainer.dataset.itemIndex);
+          const selectedItem = window.dashboardData.investmentData[targetGroupIndex].items[targetItemIndex];
+
+          // Open the sell modal with item data
+          window.openSellInvestmentModal(selectedItem, targetGroupIndex, targetItemIndex); // Call global function
+
+          // Close the swiped state after clicking sell
+          swipeContainer.classList.remove('swiped');
+          itemContentDiv.style.transform = `translateX(0px)`;
+        });
       });
       sectionContainer.appendChild(content);
 
@@ -148,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
 
       // Keep the first category open by default
-      if (index === 0) {
+      if (groupIndex === 0) {
         checkbox.checked = true;
         setTimeout(() => {
           content.style.maxHeight = content.scrollHeight + 'px';
@@ -189,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Simulate fetching all dashboard data from the server
   async function fetchDashboardData() {
-    await addAssets({symbol: "AAPL"});
+    await addAssets({ symbol: "AAPL" });
 
     const marketTrendsRep = await refreshMarketTrendsData(datePicker.value, 'AAPL'); // Fetch market trends data for the selected date
     // Mock data for Net Worth and Cumulative Income
@@ -201,37 +257,37 @@ document.addEventListener('DOMContentLoaded', function () {
     const rawInvestmentListData = [
       {
         category: 'Stocks', color: 'blue', items: [
-          { name: 'AAPL', value: 300000.00 },
-          { name: 'GOOG', value: 250000.00 },
-          { name: 'MSFT', value: 150000.00 },
-          { name: 'AMZN', value: 40740.00 }
+          { name: 'AAPL', value: 300000.00, id: 'stock-aapl', currentPrice: 175.50, ownedShares: 1709.4017 },
+          { name: 'GOOG', value: 250000.00, id: 'stock-goog', currentPrice: 150.25, ownedShares: 1663.96 },
+          { name: 'MSFT', value: 150000.00, id: 'stock-msft', currentPrice: 450.75, ownedShares: 332.78 },
+          { name: 'AMZN', value: 40740.00, id: 'stock-amzn', currentPrice: 180.10, ownedShares: 226.20 },
         ]
       },
       {
         category: 'Funds', color: 'cyan', items: [
-          { name: 'VTI', value: 150000.00 },
-          { name: 'VXUS', value: 120370.00 },
-          { name: 'BNDX', value: 100000.00 }
+          { name: 'VTI', value: 150000.00, id: 'fund-vti', currentPrice: 200.00, ownedShares: 750.00 },
+          { name: 'VXUS', value: 120370.00, id: 'fund-vxus', currentPrice: 60.00, ownedShares: 2006.16 },
+          { name: 'BNDX', value: 100000.00, id: 'fund-bndx', currentPrice: 50.00, ownedShares: 2000.00 }
         ]
       },
       {
         category: 'Bonds', color: 'green', items: [
-          { name: 'BND', value: 150000.00 },
-          { name: 'AGG', value: 120370.00 },
-          { name: 'TLT', value: 100000.00 }
+          { name: 'BND', value: 150000.00, id: 'bond-bnd', currentPrice: 80.00, ownedShares: 1875.00 },
+          { name: 'AGG', value: 120370.00, id: 'bond-agg', currentPrice: 110.00, ownedShares: 1094.27 },
+          { name: 'TLT', value: 100000.00, id: 'bond-tlt', currentPrice: 90.00, ownedShares: 1111.11 }
         ]
       },
       {
         category: 'Cash', color: 'yellow', items: [
-          { name: 'USD Savings', value: 80000.00 },
-          { name: 'EUR Current', value: 43450.00 }
+          { name: 'USD Savings', value: 80000.00, id: 'cash-usd', currentPrice: 1.00, ownedShares: 80000.00 },
+          { name: 'EUR Current', value: 43450.00, id: 'cash-eur', currentPrice: 1.08, ownedShares: 40231.48 }
         ]
       },
       {
         category: 'Others', color: 'red', items: [
-          { name: 'Real Estate', value: 30000.00 },
-          { name: 'Crypto', value: 20000.00 },
-          { name: 'Commodities', value: 11720.00 }
+          { name: 'Real Estate', value: 30000.00, id: 'other-realestate', currentPrice: 10000.00, ownedShares: 3.00 },
+          { name: 'Crypto', value: 20000.00, id: 'other-crypto', currentPrice: 500.00, ownedShares: 40.00 },
+          { name: 'Commodities', value: 11720.00, id: 'other-commodities', currentPrice: 200.00, ownedShares: 58.60 }
         ]
       }
     ];
@@ -264,7 +320,7 @@ document.addEventListener('DOMContentLoaded', function () {
       };
     });
 
-    const topMoversData = await getTopGainersAndLosers(); // Fetch top gainers and losers from AP
+    const topMoversData = await getTopGainersAndLosers(); // Fetch top gainers and losers from API
 
     return {
       symbol: 'AAPL',
@@ -283,14 +339,14 @@ document.addEventListener('DOMContentLoaded', function () {
     window.dashboardData = data; // Storing for easier access in event listeners
 
     // Update Net Worth and Cumulative Income display
-    document.getElementById('net-worth-value').textContent = `¥${data.netWorth.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    document.getElementById('cumulative-income-value').textContent = `+ ¥${data.cumulativeIncome.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('net-worth-value').textContent = `$${data.netWorth.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('cumulative-income-value').textContent = `+ $${data.cumulativeIncome.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
     // Update Growth Rate Chart
     growthRateChart.setOption({ series: [{ data: [{ value: data.growthRate }] }] });
 
     // Render Investment List and update Asset Distribution Chart
-    renderInvestmentList(data.investmentData);
+    window.renderInvestmentList(data.investmentData); // Call the global render function
 
     // Update Market Trends Chart (initial load with 1D data)
     updateMarketChart(data.marketTrendsData, '3M'); // Pass marketTrendsData here
@@ -315,4 +371,6 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('investment-list').innerHTML = '<p class="text-red-500 text-sm px-2">Failed to load investment list.</p>';
   });
 
+  // Event listener for the "Buy" button to open the modal
+  document.getElementById('add-investment-btn').addEventListener('click', window.openAddInvestmentModal);
 });

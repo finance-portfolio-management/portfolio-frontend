@@ -2,164 +2,311 @@
 <html lang="en">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Finance Portfolio</title>
-<!-- Tailwind CSS for styling -->
-<script src="https://cdn.tailwindcss.com"></script>
-<!-- Google Fonts: Inter for a modern and clean typeface -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<!-- Link to external CSS file -->
-<link rel="stylesheet" href="./styles/main.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finance Portfolio</title>
+  <!-- Tailwind CSS for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter for a modern and clean typeface -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Link to external CSS file -->
+  <link rel="stylesheet" href="./styles/main.css">
 </head>
 
 <body class="p-2 md:p-4">
+  <div class="max-w-screen-2xl mx-auto">
+    <!-- Header Section: Title, Date Picker, User Info, Sign Out Button -->
+    <header class="flex justify-between items-center mb-2">
+      <div class="flex items-center gap-3">
+        <!-- Financial Icon (SVG) -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <h1 class="text-xl font-bold text-gray-800">Finance Portfolio</h1>
+        <!-- Date Picker Input -->
+        <input type="date" id="date-picker" class="ml-2">
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="font-medium text-gray-700 text-sm">Boss</span>
+        <button
+          class="px-3 py-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
+          Sign out
+        </button>
+      </div>
+    </header>
 
-<div class="max-w-screen-2xl mx-auto">
-  <!-- Header Section: Title, Date Picker, User Info, Sign Out Button -->
-  <header class="flex justify-between items-center mb-2">
-    <div class="flex items-center gap-3">
-      <!-- Financial Icon (SVG) -->
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24"
-        stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg>
-      <h1 class="text-xl font-bold text-gray-800">Finance Portfolio</h1>
-      <!-- Date Picker Input -->
-      <input type="date" id="date-picker" class="ml-2">
-    </div>
-    <div class="flex items-center gap-3">
-      <span class="font-medium text-gray-700 text-sm">Boss</span>
-      <button
-        class="px-3 py-1.5 text-xs font-semibold text-gray-600 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
-        Sign out
-      </button>
-    </div>
-  </header>
+    <!-- Main Content Area: Divided into two columns -->
+    <main class="flex flex-col lg:flex-row gap-2">
 
-  <!-- Main Content Area: Divided into two columns -->
-  <main class="flex flex-col lg:flex-row gap-2">
-
-    <!-- Left Column: Net Worth, Asset Distribution, Market Trends, Top Gainers/Losers -->
-    <div class="flex-grow flex flex-col gap-2">
-      <!-- Top Row: Net Worth and Asset Distribution Cards -->
-      <div class="flex flex-col md:flex-row gap-2">
-        <!-- Net Worth Card -->
-        <div class="flex-1 bg-white p-4 rounded-lg shadow-sm flex flex-col justify-between">
-          <div class="flex justify-between w-full">
-            <div class="text-left">
-              <p class="text-xs text-gray-500">Net Worth</p>
-              <p id="net-worth-value" class="text-3xl font-bold text-gray-800">Loading...</p>
+      <!-- Left Column: Net Worth, Asset Distribution, Market Trends, Top Gainers/Losers -->
+      <div class="flex-grow flex flex-col gap-2">
+        <!-- Top Row: Net Worth and Asset Distribution Cards -->
+        <div class="flex flex-col md:flex-row gap-2">
+          <!-- Net Worth Card -->
+          <div class="flex-1 bg-white p-4 rounded-lg shadow-sm flex flex-col justify-between">
+            <div class="flex justify-between w-full">
+              <div class="text-left">
+                <p class="text-xs text-gray-500">Net Worth</p>
+                <p id="net-worth-value" class="text-3xl font-bold text-gray-800">Loading...</p>
+              </div>
+              <div class="text-right">
+                <p class="text-xs text-gray-500">Cumulative income</p>
+                <p id="cumulative-income-value"
+                  class="text-lg font-bold bg-blue-400 text-white px-2 py-1 rounded-md shadow-md inline-block">
+                  Loading...</p>
+              </div>
             </div>
-            <div class="text-right">
-              <p class="text-xs text-gray-500">Cumulative income</p>
-              <p id="cumulative-income-value"
-                class="text-lg font-bold bg-blue-400 text-white px-2 py-1 rounded-md shadow-md inline-block">
-                Loading...</p>
+            <!-- ECharts container for Growth Rate Gauge -->
+            <div id="growth-rate-chart" class="w-full h-40 mt-2 self-center"></div>
+          </div>
+          <!-- Asset Distribution Card -->
+          <div class="flex-1 bg-white p-4 rounded-lg shadow-sm">
+            <h2 class="font-bold text-base text-gray-800 mb-3">Asset Distribution</h2>
+            <!-- ECharts container for Asset Distribution Pie Chart -->
+            <div id="asset-distribution-chart" class="w-full h-56"></div>
+          </div>
+        </div>
+
+        <!-- Market Trends Card: Candlestick Chart and Time Range Selector -->
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <div class="flex justify-between items-center mb-3">
+            <h2 class="font-bold text-base text-gray-800">Market Trends</h2>
+            <div class="flex items-center gap-1">
+              <!-- Company Search Input -->
+              <input id="CompTrendSearch" type="text" placeholder="Search for Companies"
+                class="px-2 py-1 border border-gray-300 rounded-md text-xs w-36">
+              <!-- Time Range Selection Buttons -->
+              <div id="time-range-selector" class="flex border border-gray-200 rounded-md">
+                <button data-range="1D" class="px-2 py-1 text-xs hover:bg-gray-100 rounded-l-md">1D</button>
+                <button data-range="1W" class="px-2 py-1 text-xs hover:bg-gray-100">1W</button>
+                <button data-range="1M" class="px-2 py-1 text-xs hover:bg-gray-100">1M</button>
+                <button data-range="3M" class="px-2 py-1 text-xs hover:bg-gray-100 rounded-r-md btn-active">3M</button>
+              </div>
             </div>
           </div>
-          <!-- ECharts container for Growth Rate Gauge -->
-          <div id="growth-rate-chart" class="w-full h-40 mt-2 self-center"></div>
+          <!-- ECharts container for Market Trends Candlestick Chart -->
+          <div id="market-trends-chart" class="w-full h-64"></div>
         </div>
-        <!-- Asset Distribution Card -->
-        <div class="flex-1 bg-white p-4 rounded-lg shadow-sm">
-          <h2 class="font-bold text-base text-gray-800 mb-3">Asset Distribution</h2>
-          <!-- ECharts container for Asset Distribution Pie Chart -->
-          <div id="asset-distribution-chart" class="w-full h-56"></div>
-        </div>
-      </div>
 
-      <!-- Market Trends Card: Candlestick Chart and Time Range Selector -->
-      <div class="bg-white p-4 rounded-lg shadow-sm">
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="font-bold text-base text-gray-800">Market Trends</h2>
-          <div class="flex items-center gap-1">
-            <!-- Company Search Input -->
-            <input id= "CompTrendSearch"type="text" placeholder="Search for Companies"
-              class="px-2 py-1 border border-gray-300 rounded-md text-xs w-36">
-            <!-- Time Range Selection Buttons -->
-            <div id="time-range-selector" class="flex border border-gray-200 rounded-md">
-              <button data-range="1D" class="px-2 py-1 text-xs hover:bg-gray-100 rounded-l-md">1D</button>
-              <button data-range="1W" class="px-2 py-1 text-xs hover:bg-gray-100">1W</button>
-              <button data-range="1M" class="px-2 py-1 text-xs hover:bg-gray-100">1M</button>
-              <button data-range="3M" class="px-2 py-1 text-xs hover:bg-gray-100 rounded-r-md btn-active">3M</button>
+        <!-- Top Gainers/Losers Cards -->
+        <div class="flex flex-col md:flex-row gap-2">
+          <!-- Top Gainers Section -->
+          <div class="flex-1 bg-white p-3 rounded-lg shadow-sm">
+            <h2 class="font-bold text-base text-gray-800 mb-3">Top Gainers</h2>
+            <div id="top-gainers-list" class="space-y-1">
+              <!-- Top Gainer items will be injected here by JavaScript -->
+              <p class="text-gray-500 text-sm">Loading...</p>
+            </div>
+          </div>
+          <!-- Top Losers Section -->
+          <div class="flex-1 bg-white p-3 rounded-lg shadow-sm">
+            <h2 class="font-bold text-base text-gray-800 mb-3">Top Losers</h2>
+            <div id="top-losers-list" class="space-y-1">
+              <!-- Top Loser items will be injected here by JavaScript -->
+              <p class="text-gray-500 text-sm">Loading...</p>
             </div>
           </div>
         </div>
-        <!-- ECharts container for Market Trends Candlestick Chart -->
-        <div id="market-trends-chart" class="w-full h-64"></div>
       </div>
 
-      <!-- Top Gainers/Losers Cards -->
-      <div class="flex flex-col md:flex-row gap-2">
-        <!-- Top Gainers Section -->
-        <div class="flex-1 bg-white p-3 rounded-lg shadow-sm">
-          <h2 class="font-bold text-base text-gray-800 mb-3">Top gainers</h2>
-          <div id="top-gainers-list" class="space-y-1">
-            <!-- Top Gainer items will be injected here by JavaScript -->
-            <p class="text-gray-500 text-sm">Loading...</p>
+      <!-- Right Column: Investment List with Collapsible Categories -->
+      <div class="w-full lg:w-96 flex-shrink-0">
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <!-- Buy button and Investment List title -->
+          <div class="flex justify-between items-center mb-4 px-2">
+            <h2 class="font-bold text-lg text-gray-800">Investment List</h2>
+            <button id="add-investment-btn"
+              class="px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 transition duration-300 ease-in-out">
+              Buy
+            </button>
           </div>
-        </div>
-        <!-- Top Losers Section -->
-        <div class="flex-1 bg-white p-3 rounded-lg shadow-sm">
-          <h2 class="font-bold text-base text-gray-800 mb-3">Top losers</h2>
-          <div id="top-losers-list" class="space-y-1">
-            <!-- Top Loser items will be injected here by JavaScript -->
-            <p class="text-gray-500 text-sm">Loading...</p>
+          <div id="investment-list" class="space-y-2">
+            <!-- Investment categories will be injected here by JavaScript -->
+            <p class="text-gray-500 text-sm px-2">Loading...</p>
           </div>
         </div>
       </div>
-    </div>
+    </main>
 
-    <!-- Right Column: Investment List with Collapsible Categories -->
-    <div class="w-full lg:w-96 flex-shrink-0">
-      <div class="bg-white p-4 rounded-lg shadow-sm">
-        <h2 class="font-bold text-lg text-gray-800 mb-4 px-2">Investment List</h2>
-        <div id="investment-list" class="space-y-2">
-          <!-- Investment categories will be injected here by JavaScript -->
-          <p class="text-gray-500 text-sm px-2">Loading...</p>
+    <!-- Footer Section: Investment Advice Carousel and Risk Warning -->
+    <footer class="mt-2 space-y-1">
+      <div class="bg-blue-600 text-white p-3 rounded-lg shadow-sm flex items-start gap-3">
+        <!-- Info Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <!-- Investment Advice Carousel -->
+        <div class="h-6 overflow-hidden flex-grow">
+          <div id="advice-carousel" class="transition-transform duration-500 ease-in-out">
+            <p class="h-6 leading-6 text-sm"><strong>Investment Advice:</strong> Diversification reduces
+              risk - spread
+              your assets across different sectors.</p>
+            <p class="h-6 leading-6 text-sm"><strong>Long-term View:</strong> Don't panic during market
+              dips; successful
+              investing is often a marathon, not a sprint.</p>
+            <p class="h-6 leading-6 text-sm"><strong>Stay Informed:</strong> Regularly review your portfolio
+              and stay
+              updated on market news and trends.</p>
+          </div>
         </div>
       </div>
-    </div>
-  </main>
+      <!-- Risk Warning -->
+      <div class="text-xs text-gray-500 p-3 bg-white rounded-lg shadow-sm">
+        <p><strong>Risk Warning:</strong> The market is risky, so be cautious when investing. The data in this
+          report is
+          for reference only and does not constitute any investment advice. The investment value and its
+          returns may
+          fluctuate, and past performance does not represent future performance.</p>
+      </div>
+    </footer>
 
-  <!-- Footer Section: Investment Advice Carousel and Risk Warning -->
-  <footer class="mt-2 space-y-1">
-    <div class="bg-blue-600 text-white p-3 rounded-lg shadow-sm flex items-start gap-3">
-      <!-- Info Icon -->
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24"
-        stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <!-- Investment Advice Carousel -->
-      <div class="h-6 overflow-hidden flex-grow">
-        <div id="advice-carousel" class="transition-transform duration-500 ease-in-out">
-          <p class="h-6 leading-6 text-sm"><strong>Investment Advice:</strong> Diversification reduces risk - spread
-            your assets across different sectors.</p>
-          <p class="h-6 leading-6 text-sm"><strong>Long-term View:</strong> Don't panic during market dips; successful
-            investing is often a marathon, not a sprint.</p>
-          <p class="h-6 leading-6 text-sm"><strong>Stay Informed:</strong> Regularly review your portfolio and stay
-            updated on market news and trends.</p>
+  </div>
+
+  <!-- Add Investment Modal -->
+  <div id="add-investment-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Add New Investment</h3>
+
+      <!-- Stock Search and Table Section -->
+      <div class="mb-4">
+        <label for="stock-search-input" class="block text-gray-700 text-sm font-semibold mb-2">Stock Symbol (e.g.,
+          AAPL):</label>
+        <input type="text" id="stock-search-input"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Enter stock symbol">
+
+        <div class="mt-4 overflow-x-auto">
+          <table id="stock-details-table" class="stock-table">
+            <thead>
+              <tr>
+                <th>Select</th>
+                <th>Symbol</th>
+                <th>Full Name</th>
+                <th>Exchange</th>
+                <th>Current Price</th>
+                <th>Update Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Stock data rows will be injected here -->
+              <tr>
+                <td colspan="6" class="text-center text-gray-500 py-4">Please search for a stock to display details</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-    </div>
-    <!-- Risk Warning -->
-    <div class="text-xs text-gray-500 p-3 bg-white rounded-lg shadow-sm">
-      <p><strong>Risk Warning:</strong> The market is risky, so be cautious when investing. The data in this report is
-        for reference only and does not constitute any investment advice. The investment value and its returns may
-        fluctuate, and past performance does not represent future performance.</p>
-    </div>
-  </footer>
 
-</div>
+      <!-- Purchase Amount and Shares Section -->
+      <div class="mb-4">
+        <label for="purchase-amount-input" class="block text-gray-700 text-sm font-semibold mb-2">Purchase Amount
+          ($):</label>
+        <input type="number" id="purchase-amount-input"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Enter purchase amount" min="0" step="0.01" disabled>
+      </div>
+      <div class="mb-6">
+        <label for="num-shares-display" class="block text-gray-700 text-sm font-semibold mb-2">Purchasable
+          Shares:</label>
+        <p id="num-shares-display" class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-700">
+          0 Shares</p>
+      </div>
 
-<!-- Link to external JavaScript file -->
-<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
-<script type="module" src="./scripts/main.js"></script>
+      <!-- Payment Method Section -->
+      <div class="mb-6">
+        <label for="payment-method-select" class="block text-gray-700 text-sm font-semibold mb-2">Payment
+          Method:</label>
+        <select id="payment-method-select"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="alipay">Alipay</option>
+          <option value="bank_card">Bank Card</option>
+          <option value="wechat_pay">WeChat Pay</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="flex justify-end gap-3">
+        <button id="cancel-add-investment-btn"
+          class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md shadow-sm hover:bg-gray-300 transition duration-300 ease-in-out">
+          Cancel
+        </button>
+        <button id="confirm-buy-btn"
+          class="px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 transition duration-300 ease-in-out">
+          Buy
+        </button>
+      </div>
+
+      <!-- Loading Spinner Overlay -->
+      <div id="loading-spinner-overlay" class="spinner-overlay hidden">
+        <div class="spinner"></div>
+      </div>
+
+      <!-- Success Message Overlay -->
+      <div id="success-message-overlay" class="success-message hidden">
+        Purchase successful!
+      </div>
+    </div>
+  </div>
+
+  <!-- Sell Investment Modal -->
+  <div id="sell-investment-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 class="text-xl font-bold text-gray-800 mb-4">Sell Investment</h3>
+
+      <div class="mb-4">
+        <p class="text-gray-700 text-sm font-semibold mb-2">Selling: <span id="sell-stock-symbol"
+            class="font-bold text-blue-600"></span></p>
+        <p class="text-700 text-sm font-semibold mb-2">Current Price: <span id="sell-stock-price"
+            class="font-bold text-green-600"></span></p>
+        <p class="text-gray-700 text-sm font-semibold mb-2">Owned Shares: <span id="sell-owned-shares"
+            class="font-bold text-gray-800"></span></p>
+      </div>
+
+      <div class="mb-4">
+        <label for="shares-to-sell-input" class="block text-gray-700 text-sm font-semibold mb-2">Shares to Sell:</label>
+        <input type="number" id="shares-to-sell-input"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Enter shares to sell" min="0" step="0.0001">
+      </div>
+      <div class="mb-6">
+        <label for="estimated-proceeds-display" class="block text-gray-700 text-sm font-semibold mb-2">Estimated
+          Proceeds:</label>
+        <p id="estimated-proceeds-display"
+          class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-700">$0.00</p>
+      </div>
+
+      <div class="flex justify-end gap-3">
+        <button id="cancel-sell-btn"
+          class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md shadow-sm hover:bg-gray-300 transition duration-300 ease-in-out">
+          Cancel
+        </button>
+        <button id="confirm-sell-btn"
+          class="px-4 py-2 bg-red-600 text-white rounded-md shadow-md hover:bg-red-700 transition duration-300 ease-in-out">
+          Confirm Sell
+        </button>
+      </div>
+
+      <!-- Loading Spinner Overlay for Sell Modal -->
+      <div id="sell-loading-spinner-overlay" class="spinner-overlay hidden">
+        <div class="spinner"></div>
+      </div>
+
+      <!-- Success Message Overlay for Sell Modal -->
+      <div id="sell-success-message-overlay" class="success-message hidden">
+        Sale successful!
+      </div>
+    </div>
+  </div>
+
+  <!-- Link to external JavaScript file -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script type="module" src="./scripts/main.js"></script>
 </body>
 
 </html>

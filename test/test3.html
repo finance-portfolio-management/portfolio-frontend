@@ -395,12 +395,12 @@
             <!-- Right Column: Investment List with Collapsible Categories -->
             <div class="w-full lg:w-96 flex-shrink-0">
                 <div class="bg-white p-4 rounded-lg shadow-sm">
-                    <!-- Add button and Investment List title -->
+                    <!-- Buy button and Investment List title -->
                     <div class="flex justify-between items-center mb-4 px-2">
                         <h2 class="font-bold text-lg text-gray-800">Investment List</h2>
                         <button id="add-investment-btn"
                             class="px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 transition duration-300 ease-in-out">
-                            Add
+                            Buy
                         </button>
                     </div>
                     <div id="investment-list" class="space-y-2">
@@ -483,7 +483,7 @@
 
             <!-- Purchase Amount and Shares Section -->
             <div class="mb-4">
-                <label for="purchase-amount-input" class="block text-gray-700 text-sm font-semibold mb-2">Purchase Amount (¥):</label>
+                <label for="purchase-amount-input" class="block text-gray-700 text-sm font-semibold mb-2">Purchase Amount ($):</label>
                 <input type="number" id="purchase-amount-input"
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter purchase amount" min="0" step="0.01" disabled>
@@ -535,7 +535,7 @@
 
             <div class="mb-4">
                 <p class="text-gray-700 text-sm font-semibold mb-2">Selling: <span id="sell-stock-symbol" class="font-bold text-blue-600"></span></p>
-                <p class="text-gray-700 text-sm font-semibold mb-2">Current Price: <span id="sell-stock-price" class="font-bold text-green-600"></span></p>
+                <p class="text-700 text-sm font-semibold mb-2">Current Price: <span id="sell-stock-price" class="font-bold text-green-600"></span></p>
                 <p class="text-gray-700 text-sm font-semibold mb-2">Owned Shares: <span id="sell-owned-shares" class="font-bold text-gray-800"></span></p>
             </div>
 
@@ -547,7 +547,7 @@
             </div>
             <div class="mb-6">
                 <label for="estimated-proceeds-display" class="block text-gray-700 text-sm font-semibold mb-2">Estimated Proceeds:</label>
-                <p id="estimated-proceeds-display" class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-700">¥0.00</p>
+                <p id="estimated-proceeds-display" class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-700">$0.00</p>
             </div>
 
             <div class="flex justify-end gap-3">
@@ -579,6 +579,9 @@
     <script type="module">
         import { getSingleHistoricalAsset } from '../scripts/api/assetsHistoryAPI.js';
         import { addAssets } from '../scripts/api/assetsAPI.js';
+        // Import the new JavaScript modules
+        import '../scripts/components/buyInvestment.js';
+        import '../scripts/components/sellInvestment.js';
 
         document.addEventListener('DOMContentLoaded', function () {
             function splitData(rawData) {
@@ -783,11 +786,11 @@
                                   <span class="font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded mb-1 text-sm">${item.symbol}</span>
                                   <div>
                                       <p class="font-semibold text-gray-700 text-sm">${item.name}</p>
-                                      <p class="text-xs text-gray-500">${parseFloat(item.currentPrice).toFixed(2)}</p>
+                                      <p class="text-xs text-gray-500">$${parseFloat(item.currentPrice).toFixed(2)}</p>
                                   </div>
                               </div>
                               <div class="text-right">
-                                  <p class="font-semibold text-green-600 text-sm">${changePrice.toFixed(2)} (${parseFloat(item.growthRate).toFixed(2)}%)</p>
+                                  <p class="font-semibold text-green-600 text-sm">$${changePrice.toFixed(2)} (${parseFloat(item.growthRate).toFixed(2)}%)</p>
                                   <div class="h-1.5 w-16 bg-green-200 rounded-full mt-0.5"><div class="h-1.5 bg-green-500 rounded-full" style="width: 80%"></div></div>
                               </div>
                           </div>
@@ -805,11 +808,11 @@
                                   <span class="font-bold text-red-600 bg-red-100 px-2 py-1 rounded mb-1 text-sm">${item.symbol}</span>
                                   <div>
                                       <p class="font-semibold text-gray-700 text-sm">${item.name}</p>
-                                      <p class="text-xs text-gray-500">${parseFloat(item.currentPrice).toFixed(2)}</p>
+                                      <p class="text-xs text-gray-500">$${parseFloat(item.currentPrice).toFixed(2)}</p>
                                   </div>
                               </div>
                               <div class="text-right">
-                                  <p class="font-semibold text-red-600 text-sm">${changePrice.toFixed(2)} (${parseFloat(item.growthRate).toFixed(2)}%)</p>
+                                  <p class="font-semibold text-red-600 text-sm">$${changePrice.toFixed(2)} (${parseFloat(item.growthRate).toFixed(2)}%)</p>
                                   <div class="h-1.5 w-16 bg-red-200 rounded-full mt-0.5"><div class="h-1.5 bg-red-500 rounded-full" style="width: 80%"></div></div>
                               </div>
                           </div>
@@ -904,7 +907,7 @@
             });
 
             // Render Investment List
-            function renderInvestmentList(data) {
+            window.renderInvestmentList = function(data) { // Made global for access from sellInvestment.js
                 const investmentListContainer = document.getElementById('investment-list');
                 investmentListContainer.innerHTML = ''; // Clear existing content
 
@@ -927,7 +930,7 @@
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-${group.color}-500"></span>
                             <span class="font-bold text-gray-800 text-sm">${group.category}</span>
-                            <span class="text-xs text-gray-600">¥${group.categoryValue.toFixed(2)}</span>
+                            <span class="text-xs text-gray-600">$${group.categoryValue.toFixed(2)}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="font-semibold text-gray-700 text-sm">${group.categoryPercentage.toFixed(2)}%</span>
@@ -953,12 +956,12 @@
                         itemContentDiv.className = 'investment-item-content transition-transform duration-300 ease-in-out flex justify-between items-center p-2 bg-white rounded-md';
                         itemContentDiv.innerHTML = `
                             <span class="font-medium text-gray-700 text-sm">${item.name}</span>
-                            <span class="text-xs text-gray-500">¥${item.value.toFixed(2)} (${item.percentage.toFixed(2)}%)</span>
+                            <span class="text-xs text-gray-500">$${item.value.toFixed(2)} (${item.percentage.toFixed(2)}%)</span>
                         `;
 
                         // Create the sell button (formerly delete)
                         const sellBtn = document.createElement('button');
-                        sellBtn.className = 'sell-btn absolute right-0 top-0 h-full bg-red-600 text-white px-4 py-2 rounded-r-md flex items-center justify-center transform translate-x-full transition-transform duration-300 ease-in-out';
+                        sellBtn.className = 'sell-btn absolute right-0 top-0 h-full bg-red-600 text-white px-4 py-2 rounded-r-md flex items-center justify-content-center transform translate-x-full transition-transform duration-300 ease-in-out';
                         sellBtn.textContent = 'Sell';
 
                         swipeContainer.appendChild(itemContentDiv);
@@ -1033,7 +1036,7 @@
                             const selectedItem = window.dashboardData.investmentData[targetGroupIndex].items[targetItemIndex];
 
                             // Open the sell modal with item data
-                            openSellInvestmentModal(selectedItem, targetGroupIndex, targetItemIndex);
+                            window.openSellInvestmentModal(selectedItem, targetGroupIndex, targetItemIndex); // Call global function
 
                             // Close the swiped state after clicking sell
                             swipeContainer.classList.remove('swiped');
@@ -1187,14 +1190,14 @@
                 window.dashboardData = data; // Storing for easier access in event listeners
 
                 // Update Net Worth and Cumulative Income display
-                document.getElementById('net-worth-value').textContent = `¥${data.netWorth.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                document.getElementById('cumulative-income-value').textContent = `+ ¥${data.cumulativeIncome.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                document.getElementById('net-worth-value').textContent = `$${data.netWorth.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                document.getElementById('cumulative-income-value').textContent = `+ $${data.cumulativeIncome.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
                 // Update Growth Rate Chart
                 growthRateChart.setOption({ series: [{ data: [{ value: data.growthRate }] }] });
 
                 // Render Investment List and update Asset Distribution Chart
-                renderInvestmentList(data.investmentData);
+                window.renderInvestmentList(data.investmentData); // Call the global render function
 
                 // Update Market Trends Chart (initial load with 1D data)
                 updateMarketChart(data.marketTrendsData, '3M'); // Pass marketTrendsData here
@@ -1220,354 +1223,9 @@
             });
 
 
-            // --- Add Investment Modal Logic ---
-            const addInvestmentBtn = document.getElementById('add-investment-btn');
-            const addInvestmentModal = document.getElementById('add-investment-modal');
-            const cancelAddInvestmentBtn = document.getElementById('cancel-add-investment-btn');
-            const confirmBuyBtn = document.getElementById('confirm-buy-btn'); 
-            const stockSearchInput = document.getElementById('stock-search-input'); 
-            const stockDetailsTableBody = document.querySelector('#stock-details-table tbody');
-            const purchaseAmountInput = document.getElementById('purchase-amount-input');
-            const numSharesDisplay = document.getElementById('num-shares-display');
-            const paymentMethodSelect = document.getElementById('payment-method-select');
-            const loadingSpinnerOverlay = document.getElementById('loading-spinner-overlay');
-            const successMessageOverlay = document.getElementById('success-message-overlay');
-
-            let selectedStock = null; // Stores the currently selected stock object for buying
-
-            // Mock stock data for buying (replace with API calls later)
-            const mockStocks = [
-                { symbol: 'AAPL', name: 'Apple Inc.', exchange: 'NASDAQ', currentPrice: 175.50, updateTime: '2025-07-29 10:30:00' },
-                { symbol: 'GOOG', name: 'Alphabet Inc. (Class C)', exchange: 'NASDAQ', currentPrice: 150.25, updateTime: '2025-07-29 10:31:00' },
-                { symbol: 'MSFT', name: 'Microsoft Corp.', exchange: 'NASDAQ', currentPrice: 450.75, updateTime: '2025-07-29 10:32:00' },
-                { symbol: 'AMZN', name: 'Amazon.com Inc.', exchange: 'NASDAQ', currentPrice: 180.10, updateTime: '2025-07-29 10:33:00' },
-                { symbol: 'TSLA', name: 'Tesla Inc.', exchange: 'NASDAQ', currentPrice: 280.00, updateTime: '2025-07-29 10:34:00' },
-                { symbol: 'NVDA', name: 'NVIDIA Corp.', exchange: 'NASDAQ', currentPrice: 1200.00, updateTime: '2025-07-29 10:35:00' },
-            ];
-
-            // Function to render stock search results for add modal
-            function renderStockSearchResults(stocks) {
-                stockDetailsTableBody.innerHTML = ''; // Clear existing content
-                if (stocks.length === 0) {
-                    stockDetailsTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-gray-500 py-4">No matching stocks found</td></tr>`;
-                    return;
-                }
-
-                stocks.forEach(stock => {
-                    const row = document.createElement('tr');
-                    row.classList.add('hover:bg-gray-50');
-                    row.innerHTML = `
-                        <td><input type="radio" name="selected-stock" value="${stock.symbol}" class="form-radio h-4 w-4 text-blue-600"></td>
-                        <td>${stock.symbol}</td>
-                        <td>${stock.name}</td>
-                        <td>${stock.exchange}</td>
-                        <td>¥${stock.currentPrice.toFixed(2)}</td>
-                        <td>${stock.updateTime}</td>
-                    `;
-                    row.addEventListener('click', () => {
-                        // Deselect all other rows
-                        stockDetailsTableBody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
-                        // Select this row
-                        row.classList.add('selected');
-                        row.querySelector('input[type="radio"]').checked = true;
-                        selectedStock = stock;
-                        // Enable purchase inputs
-                        purchaseAmountInput.disabled = false;
-                        calculateShares(); // Recalculate shares if amount already entered
-                    });
-                    stockDetailsTableBody.appendChild(row);
-                });
-            }
-
-            // Function to calculate and display number of shares for add modal
-            function calculateShares() {
-                if (selectedStock && purchaseAmountInput.value) {
-                    const amount = parseFloat(purchaseAmountInput.value);
-                    const price = selectedStock.currentPrice;
-                    if (amount > 0 && price > 0) {
-                        const shares = amount / price;
-                        numSharesDisplay.textContent = `${shares.toFixed(4)} Shares`; // Display with more precision
-                    } else {
-                        numSharesDisplay.textContent = '0 Shares';
-                    }
-                } else {
-                    numSharesDisplay.textContent = '0 Shares';
-                }
-            }
-
-            // Function to show loading spinner (for add modal)
-            function showSpinner() {
-                loadingSpinnerOverlay.classList.remove('hidden');
-            }
-
-            // Function to hide loading spinner (for add modal)
-            function hideSpinner() {
-                loadingSpinnerOverlay.classList.add('hidden');
-            }
-
-            // Function to show success message (for add modal)
-            function showSuccessMessage() {
-                successMessageOverlay.classList.remove('hidden');
-                successMessageOverlay.classList.add('show');
-                setTimeout(() => {
-                    successMessageOverlay.classList.remove('show');
-                    setTimeout(() => {
-                        successMessageOverlay.classList.add('hidden');
-                    }, 300); // Match CSS transition duration
-                }, 2000); // Show for 2 seconds
-            }
-
-            // Function to open the add investment modal
-            function openAddInvestmentModal() {
-                addInvestmentModal.classList.remove('hidden');
-                addInvestmentModal.classList.add('show');
-                // Reset modal state
-                stockSearchInput.value = '';
-                stockDetailsTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-gray-500 py-4">Please search for a stock to display details</td></tr>`;
-                purchaseAmountInput.value = '';
-                purchaseAmountInput.disabled = true;
-                numSharesDisplay.textContent = '0 Shares';
-                selectedStock = null;
-                hideSpinner();
-                successMessageOverlay.classList.add('hidden');
-            }
-
-            // Function to close the add investment modal
-            function closeAddInvestmentModal() {
-                addInvestmentModal.classList.remove('show');
-                // Use a timeout to allow the transition to complete before hiding
-                setTimeout(() => {
-                    addInvestmentModal.classList.add('hidden');
-                }, 300); // Match CSS transition duration
-            }
-
-            // Event listener for the "Add" button to open the modal
-            addInvestmentBtn.addEventListener('click', openAddInvestmentModal);
-
-            // Event listener for the "Cancel" button inside the add modal
-            cancelAddInvestmentBtn.addEventListener('click', closeAddInvestmentModal);
-
-            // Event listener for stock search input in add modal
-            stockSearchInput.addEventListener('input', (event) => {
-                const searchTerm = event.target.value.trim().toLowerCase();
-                if (searchTerm.length > 0) {
-                    const filteredStocks = mockStocks.filter(stock =>
-                        stock.symbol.toLowerCase().includes(searchTerm) ||
-                        stock.name.toLowerCase().includes(searchTerm)
-                    );
-                    renderStockSearchResults(filteredStocks);
-                } else {
-                    stockDetailsTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-gray-500 py-4">Please search for a stock to display details</td></tr>`;
-                    purchaseAmountInput.disabled = true;
-                    numSharesDisplay.textContent = '0 Shares';
-                    selectedStock = null;
-                }
-            });
-
-            // Event listener for purchase amount input in add modal
-            purchaseAmountInput.addEventListener('input', calculateShares);
-
-            // Event listener for the "Buy" button inside the add modal
-            confirmBuyBtn.addEventListener('click', () => {
-                if (!selectedStock) {
-                    console.error('Please select a stock first.');
-                    // In a real app, display a user-friendly message on the modal
-                    return;
-                }
-                const amount = parseFloat(purchaseAmountInput.value);
-                if (isNaN(amount) || amount <= 0) {
-                    console.error('Please enter a valid purchase amount.');
-                    // In a real app, display a user-friendly message on the modal
-                    return;
-                }
-
-                showSpinner(); // Show loading spinner
-
-                // Simulate API call for purchase
-                setTimeout(() => {
-                    hideSpinner(); // Hide spinner
-                    showSuccessMessage(); // Show success message
-                    console.log(`Successfully purchased ${selectedStock.symbol} for ¥${amount.toFixed(2)} using ${paymentMethodSelect.value}`);
-                    // After success message disappears, close the modal
-                    setTimeout(() => {
-                        closeAddInvestmentModal();
-                    }, 2300); // 2000ms for success message + 300ms for its fade out
-                }, 2000); // Simulate 2 seconds API call
-            });
-
-            // Close add modal if user clicks outside the modal content
-            addInvestmentModal.addEventListener('click', (e) => {
-                if (e.target === addInvestmentModal) {
-                    closeAddInvestmentModal();
-                }
-            });
-
-            // --- Sell Investment Modal Logic ---
-            const sellInvestmentModal = document.getElementById('sell-investment-modal');
-            const cancelSellBtn = document.getElementById('cancel-sell-btn');
-            const confirmSellBtn = document.getElementById('confirm-sell-btn');
-            const sellStockSymbolDisplay = document.getElementById('sell-stock-symbol');
-            const sellStockPriceDisplay = document.getElementById('sell-stock-price');
-            const sellOwnedSharesDisplay = document.getElementById('sell-owned-shares');
-            const sharesToSellInput = document.getElementById('shares-to-sell-input');
-            const estimatedProceedsDisplay = document.getElementById('estimated-proceeds-display');
-            const sellLoadingSpinnerOverlay = document.getElementById('sell-loading-spinner-overlay');
-            const sellSuccessMessageOverlay = document.getElementById('sell-success-message-overlay');
-
-            let currentSellItem = null; // Stores the item being sold
-            let currentSellGroupIndex = -1;
-            let currentSellItemIndex = -1;
-
-            // Function to open the sell investment modal
-            function openSellInvestmentModal(item, groupIndex, itemIndex) {
-                currentSellItem = item;
-                currentSellGroupIndex = groupIndex;
-                currentSellItemIndex = itemIndex;
-
-                sellStockSymbolDisplay.textContent = item.name;
-                sellStockPriceDisplay.textContent = `¥${item.currentPrice.toFixed(2)}`;
-                sellOwnedSharesDisplay.textContent = `${item.ownedShares.toFixed(4)} Shares`;
-                sharesToSellInput.value = ''; // Clear previous input
-                estimatedProceedsDisplay.textContent = '¥0.00'; // Reset proceeds
-
-                sellInvestmentModal.classList.remove('hidden');
-                sellInvestmentModal.classList.add('show');
-                hideSellSpinner(); // Ensure spinner is hidden
-                hideSellSuccessMessage(); // Ensure success message is hidden
-            }
-
-            // Function to close the sell investment modal
-            function closeSellInvestmentModal() {
-                sellInvestmentModal.classList.remove('show');
-                setTimeout(() => {
-                    sellInvestmentModal.classList.add('hidden');
-                }, 300);
-            }
-
-            // Function to calculate estimated proceeds
-            function calculateEstimatedProceeds() {
-                if (currentSellItem && sharesToSellInput.value) {
-                    const shares = parseFloat(sharesToSellInput.value);
-                    const price = currentSellItem.currentPrice;
-                    if (shares > 0 && price > 0) {
-                        const proceeds = shares * price;
-                        estimatedProceedsDisplay.textContent = `¥${proceeds.toFixed(2)}`;
-                    } else {
-                        estimatedProceedsDisplay.textContent = '¥0.00';
-                    }
-                } else {
-                    estimatedProceedsDisplay.textContent = '¥0.00';
-                }
-            }
-
-            // Function to show loading spinner (for sell modal)
-            function showSellSpinner() {
-                sellLoadingSpinnerOverlay.classList.remove('hidden');
-            }
-
-            // Function to hide loading spinner (for sell modal)
-            function hideSellSpinner() {
-                sellLoadingSpinnerOverlay.classList.add('hidden');
-            }
-
-            // Function to show success message (for sell modal)
-            function showSellSuccessMessage() {
-                sellSuccessMessageOverlay.classList.remove('hidden');
-                sellSuccessMessageOverlay.classList.add('show');
-                setTimeout(() => {
-                    sellSuccessMessageOverlay.classList.remove('show');
-                    setTimeout(() => {
-                        sellSuccessMessageOverlay.classList.add('hidden');
-                    }, 300);
-                }, 2000);
-            }
-
-            // Event listener for shares to sell input
-            sharesToSellInput.addEventListener('input', calculateEstimatedProceeds);
-
-            // Event listener for "Cancel" button in sell modal
-            cancelSellBtn.addEventListener('click', closeSellInvestmentModal);
-
-            // Event listener for "Confirm Sell" button in sell modal
-            confirmSellBtn.addEventListener('click', () => {
-                const shares = parseFloat(sharesToSellInput.value);
-
-                if (isNaN(shares) || shares <= 0) {
-                    console.error('Please enter a valid number of shares to sell.');
-                    return;
-                }
-                if (shares > currentSellItem.ownedShares) {
-                    console.error('You cannot sell more shares than you own.');
-                    return;
-                }
-
-                showSellSpinner(); // Show spinner for sell operation
-
-                // Simulate sell API call
-                setTimeout(() => {
-                    hideSellSpinner(); // Hide spinner
-                    showSellSuccessMessage(); // Show success message
-
-                    // Update the data model
-                    const soldValue = shares * currentSellItem.currentPrice;
-                    currentSellItem.value -= soldValue; // Decrease total value
-                    currentSellItem.ownedShares -= shares; // Decrease owned shares
-
-                    if (currentSellItem.ownedShares <= 0.0001) { // Use a small threshold for floating point
-                        // If all shares sold, remove the item
-                        window.dashboardData.investmentData[currentSellGroupIndex].items.splice(currentSellItemIndex, 1);
-                        // If the category becomes empty, remove the category
-                        if (window.dashboardData.investmentData[currentSellGroupIndex].items.length === 0) {
-                            window.dashboardData.investmentData.splice(currentSellGroupIndex, 1);
-                        }
-                    }
-
-                    // Recalculate percentages and total value for all groups
-                    let totalInvestmentValue = 0;
-                    window.dashboardData.investmentData.forEach(g => {
-                        g.items.forEach(i => {
-                            totalInvestmentValue += i.value;
-                        });
-                    });
-
-                    window.dashboardData.investmentData = window.dashboardData.investmentData.map(g => {
-                        let categoryValue = 0;
-                        g.items.forEach(i => {
-                            categoryValue += i.value;
-                        });
-                        const categoryPercentage = (totalInvestmentValue > 0) ? (categoryValue / totalInvestmentValue) * 100 : 0;
-
-                        const itemsWithPercentage = g.items.map(i => {
-                            const itemPercentage = (totalInvestmentValue > 0) ? (i.value / totalInvestmentValue) * 100 : 0;
-                            return { ...i, percentage: itemPercentage };
-                        });
-
-                        return {
-                            ...g,
-                            categoryValue: categoryValue,
-                            categoryPercentage: categoryPercentage,
-                            items: itemsWithPercentage
-                        };
-                    });
-
-                    // Re-render the investment list and asset distribution chart
-                    renderInvestmentList(window.dashboardData.investmentData);
-
-                    console.log(`Successfully sold ${shares} shares of ${currentSellItem.name} for ¥${soldValue.toFixed(2)}`);
-
-                    // After success message disappears, close the modal
-                    setTimeout(() => {
-                        closeSellInvestmentModal();
-                    }, 2300); // 2000ms for success message + 300ms for its fade out
-                }, 2000); // Simulate 2 seconds API call
-            });
-
-            // Close sell modal if user clicks outside the modal content
-            sellInvestmentModal.addEventListener('click', (e) => {
-                if (e.target === sellInvestmentModal) {
-                    closeSellInvestmentModal();
-                }
-            });
+            // --- Event listener for the "Add" button to open the modal ---
+            // This now calls the globally exposed function from addInvestment.js
+            document.getElementById('add-investment-btn').addEventListener('click', window.openAddInvestmentModal);
         });
     </script>
 </body>
