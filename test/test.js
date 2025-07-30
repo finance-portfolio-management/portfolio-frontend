@@ -1,5 +1,6 @@
 import { addAssets, getAllAssets, getSingleAsset, updateSingleAsset, deleteSingleAsset } from '../scripts/api/assetsAPI.js';
 import { getSingleHistoricalAsset } from '../scripts/api/assetsHistoryAPI.js';
+import { buyAsset, sellAsset, getHoldings } from '../scripts/api/assetsInvestmentAPI.js';
 
 function clearAllInputs() {
     document.querySelectorAll('input, textarea, select').forEach(el => el.value = '');
@@ -116,5 +117,60 @@ async function getSingleHistoricalAssetTest() {
     console.log(data);
     document.getElementsByClassName("test-output-content")[0].innerHTML = JSON.stringify(data, null, 2);
     clearAllInputs();
+
+}
+
+
+// -------------------------------
+document.getElementById('buyAssetsBtn').addEventListener('click', () => {
+    buyAssetTest();
+});
+async function buyAssetTest() {
+    const payload = {
+        symbol: document.getElementById('buySymbol').value,
+        name: document.getElementById('buyName').value,
+        quantity: document.getElementById('buyQuantity').value,
+        tradeDate: document.getElementById('buyDate').value
+    };
+    const data = await buyAsset(payload);
+    if (data instanceof Error) {
+        document.getElementsByClassName("test-output-content")[0].innerHTML = 'Error: ' + data.message;
+        return;
+    }
+    console.log(data);
+    document.getElementsByClassName("test-output-content")[0].innerHTML = JSON.stringify(data, null, 2);
+
+}
+document.getElementById('sellAssetsBtn').addEventListener('click', () => {
+    sellAssetTest();
+});
+async function sellAssetTest() {
+    const payload = {
+        symbol: document.getElementById('sellSymbol').value,
+        name: document.getElementById('sellName').value,
+        quantity: document.getElementById('sellQuantity').value,
+        tradeDate: document.getElementById('sellDate').value
+    };
+    const data = await sellAsset(payload);
+    if (data instanceof Error) {
+        document.getElementsByClassName("test-output-content")[0].innerHTML = 'Error ' + data.message;
+        return;
+    }
+    console.log(data);
+    document.getElementsByClassName("test-output-content")[0].innerHTML = JSON.stringify(data, null, 2);
+
+}
+document.getElementById('queryAssetsBtn').addEventListener('click', () => {
+    queryAssetTest();
+});
+async function queryAssetTest() {
+    const payload =  document.getElementById('queryDate').value;
+    const data = await getHoldings(payload);
+    if (data instanceof Error) {
+        document.getElementsByClassName("test-output-content")[0].innerHTML = 'Error fetching single historical asset: ' + data.message;
+        return;
+    }
+    console.log(data);
+    document.getElementsByClassName("test-output-content")[0].innerHTML = JSON.stringify(data, null, 2);
 
 }
