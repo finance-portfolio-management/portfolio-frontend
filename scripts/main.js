@@ -281,12 +281,6 @@ document.addEventListener('DOMContentLoaded', function () {
         ]
       },
       {
-        category: 'Cash', color: 'yellow', items: [
-          { name: 'USD Savings', value: 80000.00, id: 'cash-usd', currentPrice: 1.00, ownedShares: 80000.00 },
-          { name: 'EUR Current', value: 43450.00, id: 'cash-eur', currentPrice: 1.08, ownedShares: 40231.48 }
-        ]
-      },
-      {
         category: 'Others', color: 'red', items: [
           { name: 'Real Estate', value: 30000.00, id: 'other-realestate', currentPrice: 10000.00, ownedShares: 3.00 },
           { name: 'Crypto', value: 20000.00, id: 'other-crypto', currentPrice: 500.00, ownedShares: 40.00 },
