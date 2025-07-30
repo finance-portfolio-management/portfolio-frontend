@@ -273,3 +273,50 @@ input[type="date"] {
 .swipe-container.swiped .sell-btn {
   transform: translateX(0);
 }
+
+/* main.css */
+
+/* ... existing styles ... */
+
+/* Table styles within modal */
+.stock-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+}
+
+.stock-table th,
+.stock-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.stock-table th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.stock-table tbody tr:hover {
+  background-color: #f3f4f6;
+  cursor: pointer;
+}
+
+.stock-table tbody tr.selected {
+  background-color: #e0f2fe;
+  /* Light blue for selected row */
+  border-left: 4px solid #3b82f6;
+  /* Blue border for selected row */
+}
+
+/* Added styles for scrollable table body */
+.stock-table-container {
+  max-height: 200px; /* Adjust this value as needed */
+  overflow-y: auto;
+  border: 1px solid #e5e7eb; /* Optional: Add a border around the scrollable area */
+  border-radius: 0.5rem; /* Optional: Match modal content border-radius */
+}
+
+/* ... rest of your main.css ... */
