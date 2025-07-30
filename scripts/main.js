@@ -6,6 +6,7 @@ import { addAssets } from "./api/assetsAPI.js";
 // These are now imported directly in the HTML, so no need to import them here.
 import "./components/buyInvestment.js";
 import "./components/sellInvestment.js"
+import "./components/InvestmentRiskInfo.js"
 
 document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('date-picker').addEventListener('change', (e) => {
@@ -95,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Render Investment List
-  window.renderInvestmentList = function(data) { // Made global for access from sellInvestment.js
+  window.renderInvestmentList = function (data) { // Made global for access from sellInvestment.js
     const investmentListContainer = document.getElementById('investment-list');
     investmentListContainer.innerHTML = ''; // Clear existing content
 
@@ -373,4 +374,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Event listener for the "Buy" button to open the modal
   document.getElementById('add-investment-btn').addEventListener('click', window.openAddInvestmentModal);
+  
 });
