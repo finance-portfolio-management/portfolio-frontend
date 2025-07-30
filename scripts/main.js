@@ -32,6 +32,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const mm = String(today.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed, so add 1
     const dd = String(today.getDate()).padStart(2, '0');
     datePicker.value = `${yyyy}-${mm}-${dd}`; // Format as YYYY-MM-DD
+    datePicker.setAttribute('max', `${yyyy}-${mm}-${dd}`); // Set max to today
+    datePicker.setAttribute('min', '2020-01-01'); // Set min to a reasonable date
   }
 
   // --- ECharts Initialization ---
