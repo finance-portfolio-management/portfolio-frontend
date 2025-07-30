@@ -3,13 +3,14 @@ import { updateMarketChart, refreshMarketTrendsData } from "./charts/marketTrend
 import { getTopGainersAndLosers } from "./api/assetsOverallAPI.js";
 import { renderTopMovers } from "./components/topMovers.js";
 import { addAssets } from "./api/assetsAPI.js";
+import { getHoldings } from "./api/assetsInvestmentAPI.js";
 // These are now imported directly in the HTML, so no need to import them here.
 import "./components/buyInvestment.js";
 import "./components/sellInvestment.js"
 import "./components/InvestmentRiskInfo.js"
 
 document.addEventListener('DOMContentLoaded', function () {
-  document.getElementById('date-picker').addEventListener('change', (e) => {
+  document.getElementById('date-picker').addEventListener('change', async (e) => {
     let tempSymbol = "AAPL";
     if (window.dashboardData) {
       tempSymbol = window.dashboardData.symbol || "AAPL"; // Use stored symbol or default to AAPL
@@ -22,18 +23,20 @@ document.addEventListener('DOMContentLoaded', function () {
       targetButton.classList.add('btn-active');
     }
     refreshMarketTrendsData(e.target.value, tempSymbol);
+    const res = await getHoldings(datePicker.value); // Refresh holdings after purchase
+    window.renderInvestmentList(res); // Call the global function to update the investment list
   });
 
   // --- Set Date Picker to Today's Date ---
   const datePicker = document.getElementById('date-picker');
   if (datePicker) {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed, so add 1
-    const dd = String(today.getDate()).padStart(2, '0');
-    datePicker.value = `${yyyy}-${mm}-${dd}`; // Format as YYYY-MM-DD
-    datePicker.setAttribute('max', `${yyyy}-${mm}-${dd}`); // Set max to today
-    datePicker.setAttribute('min', '2020-01-01'); // Set min to a reasonable date
+    // const today = new Date();
+    // const yyyy = today.getFullYear();
+    // const mm = String(today.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed, so add 1
+    // const dd = String(today.getDate()).padStart(2, '0');
+    datePicker.value = '2025-07-30'; // Format as YYYY-MM-DD
+    datePicker.setAttribute('max', '2025-07-30'); // Set max to today
+    datePicker.setAttribute('min', '2025-01-01'); // Set min to a reasonable date
   }
 
   // --- ECharts Initialization ---
@@ -57,8 +60,8 @@ document.addEventListener('DOMContentLoaded', function () {
       radius: '95%', // Gauge size
       startAngle: 200, // Start angle of the gauge arc
       endAngle: -20, // End angle of the gauge arc
-      min: -10, // Allow negative growth
-      max: 10,
+      min: -100, // Allow negative growth
+      max: 100,
       splitNumber: 5, // Simplified number of scale marks
       progress: { show: true, width: 8 }, // Simplified progress bar width
       pointer: { show: false }, // Hide pointer
@@ -69,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
       anchor: { show: false }, // Hide anchor point
       detail: {
         valueAnimation: true, // Value change animation
-        fontSize: 16,
+        fontSize: 12,
         fontWeight: 'bold',
         offsetCenter: [0, '0%'], // Detail text position
         formatter: function (value) {
@@ -99,6 +102,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Render Investment List
   window.renderInvestmentList = function (data) { // Made global for access from sellInvestment.js
+    // console.log(data)
+    document.getElementById('net-worth-value').textContent = `$${data.totalAssetValue.toFixed(2)}`;
+    let cumulativeIncome = 0;
+    let growthRate = 0;
+    if (window.dashboardData && window.dashboardData.firstDayAssetValue) {
+      cumulativeIncome = data.totalAssetValue - window.dashboardData.firstDayAssetValue;
+      growthRate = ((data.totalAssetValue - window.dashboardData.firstDayAssetValue) / window.dashboardData.firstDayAssetValue) * 100;
+    }
+
+    if (cumulativeIncome > 0) {
+      document.getElementById('cumulative-income-value')
+        .classList.replace('bg-red-400', 'bg-blue-400');
+    } else {
+      document.getElementById('cumulative-income-value')
+        .classList.replace('bg-blue-400', 'bg-red-400');
+    }
+    document.getElementById('cumulative-income-value').textContent = `$${cumulativeIncome.toFixed(2)}`;
+    console.log(growthRate)
+    growthRateChart.setOption({ series: [{ data: [{ value: growthRate }] }] });
+
+
+    data = data.processedData; // Use processed data from API response
+
     const investmentListContainer = document.getElementById('investment-list');
     investmentListContainer.innerHTML = ''; // Clear existing content
 
@@ -147,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
         itemContentDiv.className = 'investment-item-content transition-transform duration-300 ease-in-out flex justify-between items-center p-2 bg-white rounded-md';
         itemContentDiv.innerHTML = `
                             <span class="font-medium text-gray-700 text-sm">${item.name}</span>
-                            <span class="text-xs text-gray-500">$${item.value.toFixed(2)} (${item.percentage.toFixed(2)}%)</span>
+                            <span class="text-xs text-gray-500">$${item.value.toFixed(2)} (${item.ownedShares.toFixed(4)} shares)</span>
                         `;
 
         // Create the sell button (formerly delete)
@@ -183,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function () {
         sellBtn.addEventListener('click', () => {
           const targetGroupIndex = parseInt(swipeContainer.dataset.groupIndex);
           const targetItemIndex = parseInt(swipeContainer.dataset.itemIndex);
-          const selectedItem = window.dashboardData.investmentData[targetGroupIndex].items[targetItemIndex];
+          const selectedItem = window.dashboardData.investmentData.processedData[targetGroupIndex].items[targetItemIndex];
 
           // Open the sell modal with item data
           window.openSellInvestmentModal(selectedItem, targetGroupIndex, targetItemIndex); // Call global function
@@ -207,13 +233,12 @@ document.addEventListener('DOMContentLoaded', function () {
       });
 
       // Keep the first category open by default
-      if (groupIndex === 0) {
-        checkbox.checked = true;
-        setTimeout(() => {
-          content.style.maxHeight = content.scrollHeight + 'px';
-          headerLabel.querySelector('.chevron').classList.add('chevron-rotated');
-        }, 0);
-      }
+
+      checkbox.checked = true;
+      setTimeout(() => {
+        content.style.maxHeight = content.scrollHeight + 'px';
+        headerLabel.querySelector('.chevron').classList.add('chevron-rotated');
+      }, 0);
 
       investmentListContainer.appendChild(sectionContainer);
 
@@ -241,6 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
         data: pieChartData
       }],
       color: ['#5470C6', '#91CC75', '#FAC858', '#EE6666', '#73C0DE']
+      // rgb(207 250 254 rgb(220 252 231rgb(219 234 254)
     };
     assetDistributionChart.setOption(assetDistributionOption, true); // true for merging options
   }
@@ -251,82 +277,26 @@ document.addEventListener('DOMContentLoaded', function () {
     await addAssets({ symbol: "AAPL" });
 
     const marketTrendsRep = await refreshMarketTrendsData(datePicker.value, 'AAPL'); // Fetch market trends data for the selected date
-    // Mock data for Net Worth and Cumulative Income
-    const netWorthValue = 1234567.89;
-    const cumulativeIncomeValue = 5678.9;
-    const growthRateValue = 2.5; // Example growth rate
+
+    // const growthRateValue = 2.5; // Example growth rate
 
     // Mock data for Investment List (raw data, will be processed)
-    const rawInvestmentListData = [
-      {
-        category: 'Stocks', color: 'blue', items: [
-          { name: 'AAPL', value: 300000.00, id: 'stock-aapl', currentPrice: 175.50, ownedShares: 1709.4017 },
-          { name: 'GOOG', value: 250000.00, id: 'stock-goog', currentPrice: 150.25, ownedShares: 1663.96 },
-          { name: 'MSFT', value: 150000.00, id: 'stock-msft', currentPrice: 450.75, ownedShares: 332.78 },
-          { name: 'AMZN', value: 40740.00, id: 'stock-amzn', currentPrice: 180.10, ownedShares: 226.20 },
-        ]
-      },
-      {
-        category: 'Funds', color: 'cyan', items: [
-          { name: 'VTI', value: 150000.00, id: 'fund-vti', currentPrice: 200.00, ownedShares: 750.00 },
-          { name: 'VXUS', value: 120370.00, id: 'fund-vxus', currentPrice: 60.00, ownedShares: 2006.16 },
-          { name: 'BNDX', value: 100000.00, id: 'fund-bndx', currentPrice: 50.00, ownedShares: 2000.00 }
-        ]
-      },
-      {
-        category: 'Bonds', color: 'green', items: [
-          { name: 'BND', value: 150000.00, id: 'bond-bnd', currentPrice: 80.00, ownedShares: 1875.00 },
-          { name: 'AGG', value: 120370.00, id: 'bond-agg', currentPrice: 110.00, ownedShares: 1094.27 },
-          { name: 'TLT', value: 100000.00, id: 'bond-tlt', currentPrice: 90.00, ownedShares: 1111.11 }
-        ]
-      },
-      {
-        category: 'Others', color: 'red', items: [
-          { name: 'Real Estate', value: 30000.00, id: 'other-realestate', currentPrice: 10000.00, ownedShares: 3.00 },
-          { name: 'Crypto', value: 20000.00, id: 'other-crypto', currentPrice: 500.00, ownedShares: 40.00 },
-          { name: 'Commodities', value: 11720.00, id: 'other-commodities', currentPrice: 200.00, ownedShares: 58.60 }
-        ]
-      }
-    ];
+    const processedInvestmentData = await getHoldings(datePicker.value);
 
-    // Calculate total investment value for accurate percentages
-    let totalInvestmentValue = 0;
-    rawInvestmentListData.forEach(group => {
-      group.items.forEach(item => {
-        totalInvestmentValue += item.value;
-      });
-    });
+    const { totalAssetValue } = await getHoldings("2025-07-01")
 
-    const processedInvestmentData = rawInvestmentListData.map(group => {
-      let categoryValue = 0;
-      group.items.forEach(item => {
-        categoryValue += item.value;
-      });
-      const categoryPercentage = (categoryValue / totalInvestmentValue) * 100;
-
-      const itemsWithPercentage = group.items.map(item => {
-        const itemPercentage = (item.value / totalInvestmentValue) * 100;
-        return { ...item, percentage: itemPercentage };
-      });
-
-      return {
-        ...group,
-        categoryValue: categoryValue,
-        categoryPercentage: categoryPercentage,
-        items: itemsWithPercentage
-      };
-    });
 
     const topMoversData = await getTopGainersAndLosers(); // Fetch top gainers and losers from API
 
     return {
       symbol: 'AAPL',
-      netWorth: netWorthValue,
-      cumulativeIncome: cumulativeIncomeValue,
-      growthRate: growthRateValue,
+      // netWorth: netWorthValue,
+      // cumulativeIncome: cumulativeIncomeValue,
+      // growthRate: growthRateValue,
       investmentData: processedInvestmentData,
       marketTrendsData: marketTrendsRep,
-      topMoversData: topMoversData.data
+      topMoversData: topMoversData.data,
+      firstDayAssetValue: totalAssetValue // Store the first day asset value for calculations
     };
   }
 
@@ -336,8 +306,6 @@ document.addEventListener('DOMContentLoaded', function () {
     window.dashboardData = data; // Storing for easier access in event listeners
 
     // Update Net Worth and Cumulative Income display
-    document.getElementById('net-worth-value').textContent = `$${data.netWorth.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    document.getElementById('cumulative-income-value').textContent = `+ $${data.cumulativeIncome.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
     // Update Growth Rate Chart
     growthRateChart.setOption({ series: [{ data: [{ value: data.growthRate }] }] });
@@ -370,5 +338,5 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Event listener for the "Buy" button to open the modal
   document.getElementById('add-investment-btn').addEventListener('click', window.openAddInvestmentModal);
-  
+
 });
