@@ -1,3 +1,4 @@
+import { sellAsset, getHoldings} from "../api/assetsInvestmentAPI.js";
 // sellInvestment.js
 
 // Declare variables at a higher scope if they are needed by globally exposed functions
@@ -18,6 +19,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const estimatedProceedsDisplay = document.getElementById('estimated-proceeds-display');
     const sellLoadingSpinnerOverlay = document.getElementById('sell-loading-spinner-overlay');
     const sellSuccessMessageOverlay = document.getElementById('sell-success-message-overlay');
+    const sellAllBtn = document.getElementById('sell-all-btn'); // Get the new "Sell All" button
+    const datePicker = document.getElementById('date-picker'); // Assuming datePicker is defined in your HTML
 
     // Define global functions AFTER DOM elements are retrieved and are guaranteed to exist
     window.openSellInvestmentModal = function(item, groupIndex, itemIndex) {
@@ -86,11 +89,19 @@ document.addEventListener('DOMContentLoaded', function () {
     // Event listener for shares to sell input
     sharesToSellInput.addEventListener('input', calculateEstimatedProceeds);
 
+    // Event listener for "Sell All" button
+    sellAllBtn.addEventListener('click', () => {
+        if (currentSellItem) {
+            sharesToSellInput.value = currentSellItem.ownedShares;
+            calculateEstimatedProceeds();
+        }
+    });
+
     // Event listener for "Cancel" button in sell modal
     cancelSellBtn.addEventListener('click', window.closeSellInvestmentModal);
 
     // Event listener for "Confirm Sell" button in sell modal
-    confirmSellBtn.addEventListener('click', () => {
+    confirmSellBtn.addEventListener('click', async () => {
         const shares = parseFloat(sharesToSellInput.value);
 
         if (isNaN(shares) || shares <= 0) {
@@ -103,70 +114,26 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         window.showSellSpinner(); // Show spinner for sell operation
-
-        // Simulate sell API call
+        const paylaod = {
+            symbol: currentSellItem.name,
+            name: currentSellItem.id.split("-")[0],
+            quantity: shares,
+            tradeDate: datePicker.value // Assuming datePicker is defined globally or accessible here
+        };
+        await sellAsset(paylaod)
+        // Simulate API call for purchase
         setTimeout(() => {
             window.hideSellSpinner(); // Hide spinner
             window.showSellSuccessMessage(); // Show success message
-
-            // Update the data model (assuming window.dashboardData is accessible)
-            const soldValue = shares * currentSellItem.currentPrice;
-            currentSellItem.value -= soldValue; // Decrease total value
-            currentSellItem.ownedShares -= shares; // Decrease owned shares
-
-            if (currentSellItem.ownedShares <= 0.0001) { // Use a small threshold for floating point
-                // If all shares sold, remove the item
-                if (window.dashboardData && window.dashboardData.investmentData && window.dashboardData.investmentData[currentSellGroupIndex]) {
-                    window.dashboardData.investmentData[currentSellGroupIndex].items.splice(currentSellItemIndex, 1);
-                    // If the category becomes empty, remove the category
-                    if (window.dashboardData.investmentData[currentSellGroupIndex].items.length === 0) {
-                        window.dashboardData.investmentData.splice(currentSellGroupIndex, 1);
-                    }
-                }
-            }
-
-            // Recalculate percentages and total value for all groups
-            let totalInvestmentValue = 0;
-            if (window.dashboardData && window.dashboardData.investmentData) {
-                window.dashboardData.investmentData.forEach(g => {
-                    g.items.forEach(i => {
-                        totalInvestmentValue += i.value;
-                    });
-                });
-
-                window.dashboardData.investmentData = window.dashboardData.investmentData.map(g => {
-                    let categoryValue = 0;
-                    g.items.forEach(i => {
-                        categoryValue += i.value;
-                    });
-                    const categoryPercentage = (totalInvestmentValue > 0) ? (categoryValue / totalInvestmentValue) * 100 : 0;
-
-                    const itemsWithPercentage = g.items.map(i => {
-                        const itemPercentage = (totalInvestmentValue > 0) ? (i.value / totalInvestmentValue) * 100 : 0;
-                        return { ...i, percentage: itemPercentage };
-                    });
-
-                    return {
-                        ...g,
-                        categoryValue: categoryValue,
-                        categoryPercentage: categoryPercentage,
-                        items: itemsWithPercentage
-                    };
-                });
-                // Re-render the investment list and asset distribution chart (assuming renderInvestmentList is global)
-                if (typeof window.renderInvestmentList === 'function') {
-                    window.renderInvestmentList(window.dashboardData.investmentData);
-                }
-            }
-
-
-            console.log(`Successfully sold ${shares} shares of ${currentSellItem.name} for $${soldValue.toFixed(2)}`);
-
             // After success message disappears, close the modal
             setTimeout(() => {
                 window.closeSellInvestmentModal();
-            }, 2300); // 2000ms for success message + 300ms for its fade out
-        }, 2000); // Simulate 2 seconds API call
+            }, 500); // 1000ms for success message + 300ms for its fade out
+        }, 500); // Simulate 1 second API call
+        const res = await getHoldings(datePicker.value); // Refresh holdings after purchase
+        window.renderInvestmentList(res); // Call the global function to update the investment list
+
+
     });
 
     // Close sell modal if user clicks outside the modal content

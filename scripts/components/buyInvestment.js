@@ -1,3 +1,6 @@
+import { buyAsset, getHoldings} from '../api/assetsInvestmentAPI.js';
+
+
 // addInvestment.js
 document.addEventListener('DOMContentLoaded', function () {
     const addInvestmentModal = document.getElementById('add-investment-modal');
@@ -16,12 +19,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Mock stock data for buying (replace with API calls later)
     const mockStocks = [
-        { symbol: 'AAPL', name: 'Apple Inc.', exchange: 'NASDAQ', currentPrice: 175.50, updateTime: '2025-07-29 10:30:00' },
-        { symbol: 'GOOG', name: 'Alphabet Inc. (Class C)', exchange: 'NASDAQ', currentPrice: 150.25, updateTime: '2025-07-29 10:31:00' },
-        { symbol: 'MSFT', name: 'Microsoft Corp.', exchange: 450.75, updateTime: '2025-07-29 10:32:00' },
-        { symbol: 'AMZN', name: 'Amazon.com Inc.', exchange: 'NASDAQ', currentPrice: 180.10, updateTime: '2025-07-29 10:33:00' },
-        { symbol: 'TSLA', name: 'Tesla Inc.', exchange: 'NASDAQ', currentPrice: 280.00, updateTime: '2025-07-29 10:34:00' },
-        { symbol: 'NVDA', name: 'NVIDIA Corp.', exchange: 'NASDAQ', currentPrice: 1200.00, updateTime: '2025-07-29 10:35:00' },
+        { symbol: 'AAPL', name: 'Apple Inc.', type: "stock", currentPrice: 207.2000, updateTime: '2025-07-30 10:30:00' },
+        { symbol: 'BD_FUND', name: 'BD_FUND', type: "fund", currentPrice: 123.7000, updateTime: '2025-07-30 10:31:00' },
+        { symbol: 'CORP', name: 'PIMCO Investment Grade Corporate Bond', type: "bond", currentPrice: 101.6000, updateTime: '2025-07-30 10:31:00' },
+        { symbol: 'EQ_FUND', name: 'EQ_FUND', type: "fund", currentPrice: 252.7000, updateTime: '2025-07-30 10:34:00' },
+        { symbol: 'GOVT', name: 'iShares U.S. Treasury Bond', type: "bond", currentPrice: 101.9000, updateTime: '2025-07-30 10:33:00' },
+        { symbol: 'MIX_FUND', name: 'MIX_FUND', type: "fund", currentPrice: 180.6000, updateTime: '2025-07-30 10:35:00' },
+        { symbol: 'MSFT', name: 'Microsoft Corp.', type: "stock", currentPrice: 434.5000, updateTime: '2025-07-30 10:32:00' },
     ];
 
     // Function to render stock search results for add modal
@@ -39,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td><input type="radio" name="selected-stock" value="${stock.symbol}" class="form-radio h-4 w-4 text-blue-600"></td>
                 <td>${stock.symbol}</td>
                 <td>${stock.name}</td>
-                <td>${stock.exchange}</td>
+                
                 <td>$${stock.currentPrice.toFixed(2)}</td>
                 <td>${stock.updateTime}</td>
             `;
@@ -80,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to calculate amount based on shares
     function calculateAmountFromShares() {
         if (selectedStock && numSharesInput.value) {
+            console.log(selectedStock)
             const shares = parseFloat(numSharesInput.value);
             const price = selectedStock.currentPrice;
             if (shares > 0 && price > 0) {
@@ -116,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Function to open the add investment modal
-    window.openAddInvestmentModal = function() { // Made global for access from HTML
+    window.openAddInvestmentModal = function () { // Made global for access from HTML
         addInvestmentModal.classList.remove('hidden');
         addInvestmentModal.classList.add('show');
         // Reset modal state
@@ -166,8 +171,10 @@ document.addEventListener('DOMContentLoaded', function () {
     purchaseAmountInput.addEventListener('input', calculateSharesFromAmount);
     numSharesInput.addEventListener('input', calculateAmountFromShares);
 
+    const datePicker = document.getElementById('date-picker');
+
     // Event listener for the "Buy" button inside the add modal
-    confirmBuyBtn.addEventListener('click', () => {
+    confirmBuyBtn.addEventListener('click', async () => {
         if (!selectedStock) {
             console.error('Please select a stock first.');
             // In a real app, display a user-friendly message on the modal
@@ -175,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         const amount = parseFloat(purchaseAmountInput.value);
         const shares = parseFloat(numSharesInput.value);
+        const type = selectedStock.type;
 
         if (isNaN(amount) || amount <= 0 || isNaN(shares) || shares <= 0) {
             console.error('Please enter valid purchase amount and shares.');
@@ -182,18 +190,30 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        const payload = {
+            symbol: selectedStock.symbol,
+            name: type,
+            quantity: shares,
+            tradeDate: datePicker.value || new Date().toISOString().split('T')[0], // Use date picker value or current date
+        };
+        // Call the API to buy the asset
+        await buyAsset(payload);
         showSpinner(); // Show loading spinner
 
         // Simulate API call for purchase
         setTimeout(() => {
             hideSpinner(); // Hide spinner
             showSuccessMessage(); // Show success message
-            console.log(`Successfully purchased ${shares.toFixed(4)} shares of ${selectedStock.symbol} for $${amount.toFixed(2)} using ${paymentMethodSelect.value}`);
             // After success message disappears, close the modal
             setTimeout(() => {
                 closeAddInvestmentModal();
-            }, 2300); // 2000ms for success message + 300ms for its fade out
-        }, 2000); // Simulate 2 seconds API call
+                
+            }, 500); // 1000ms for success message + 300ms for its fade out
+        }, 500); // Simulate 1 second API call
+        const res = await getHoldings(datePicker.value); // Refresh holdings after purchase
+        window.renderInvestmentList(res); // Call the global function to update the investment list
+        
+
     });
 
     // Close add modal if user clicks outside the modal content
