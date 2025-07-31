@@ -50,11 +50,11 @@
           <div class="flex-1 bg-white p-4 rounded-lg shadow-sm flex flex-col justify-between">
             <div class="flex justify-between w-full">
               <div class="text-left">
-                <p class="text-xs text-gray-500">Net Worth</p>
+                <p class="text-xs text-gray-500" style="font-weight:bold; font-size:18px; color:black">Net Worth</p>
                 <p id="net-worth-value" class="text-3xl font-bold text-gray-800">Loading...</p>
               </div>
               <div class="text-right">
-                <p class="text-xs text-gray-500">Cumulative income</p>
+                <p class="text-xs text-gray-500" style="font-weight:bold; font-size:18px; color:black">Cumulative Income from Day 1</p>
                 <p id="cumulative-income-value"
                   class="text-lg font-bold bg-blue-400 text-white px-2 py-1 rounded-md shadow-md inline-block">
                   Loading...</p>
@@ -188,7 +188,7 @@
                 <th>Select</th>
                 <th>Symbol</th>
                 <th>Full Name</th>
-                <th>Exchange</th>
+                <!-- <th>Exchange</th> -->
                 <th>Current Price</th>
                 <th>Update Time</th>
               </tr>
@@ -273,6 +273,7 @@
         <input type="number" id="shares-to-sell-input"
           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Enter shares to sell" min="0" step="0.0001">
+        
       </div>
       <div class="mb-6">
         <label for="estimated-proceeds-display" class="block text-gray-700 text-sm font-semibold mb-2">Estimated
@@ -282,9 +283,14 @@
       </div>
 
       <div class="flex justify-end gap-3">
+        
         <button id="cancel-sell-btn"
           class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md shadow-sm hover:bg-gray-300 transition duration-300 ease-in-out">
           Cancel
+        </button>
+        <button id="sell-all-btn"
+          class="px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 transition duration-300 ease-in-out">
+          Sell All
         </button>
         <button id="confirm-sell-btn"
           class="px-4 py-2 bg-red-600 text-white rounded-md shadow-md hover:bg-red-700 transition duration-300 ease-in-out">
