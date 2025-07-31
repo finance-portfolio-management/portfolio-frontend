@@ -64,12 +64,14 @@ export async function sellAsset(payload) {
     });
 }
 function transformInvestmentData(rawData) {
+    // color: ['#5470C6', '#91CC75', '#FAC858', '#EE6666', '#73C0DE']
+      
     const categories = {
         'stock': { category: 'Stocks', color: 'blue', items: [] },
-        'fund': { category: 'Funds', color: 'cyan', items: [] },
-        'bond': { category: 'Bonds', color: 'green', items: [] },
-        // You can add more categories here if 'name' in your raw data can have other values
-        'other': { category: 'Others', color: 'red', items: [] }
+        'fund': { category: 'Funds', color: 'green', items: [] },
+        'bond': { category: 'Bonds', color: 'orange', items: [] },
+        'cash': { category: 'Cash', color: 'red', items: [] },
+        'other': { category: 'Others', color: 'cyan', items: [] }
     };
 
     if (!rawData || !rawData.data || !rawData.data.holdings) {
@@ -87,16 +89,15 @@ function transformInvestmentData(rawData) {
                 ownedShares: parseFloat(item.quantity),
             });
         } else {
-            // Handle items that don't fit into predefined categories, e.g., add them to an 'Others' category
-            // If you want to include an 'Others' category, uncomment the 'other' category above
-            // and modify this else block accordingly.
-            // For now, we'll just ignore items that don't match.
             console.warn(`Unknown category: ${item.name}. Item not added to transformed data.`, item);
         }
     });
-
+    // console.log('Transformed Investment Data:', categories);
+    categories['cash'].items.push(
+        {name: 'USD', value: 10000, id: 'cash-usd', currentPrice: 100, ownedShares: 100}
+    )
     // Filter out empty categories and return the array of category objects
-    return Object.values(categories).filter(category => category.items.length > 0);
+    return Object.values(categories);
 }
 
 function processedInvestmentDatafun(rawInvestmentListData) {
@@ -130,6 +131,7 @@ function processedInvestmentDatafun(rawInvestmentListData) {
             items: itemsWithPercentage
         };
     });
+    // console.log('Processed Investment Data:', processedInvestmentData);
     return {
         processedData: processedInvestmentData,
         totalAssetValue: totalInvestmentValue

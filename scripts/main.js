@@ -171,10 +171,19 @@ document.addEventListener('DOMContentLoaded', function () {
         // Create the content div (original investment-item)
         const itemContentDiv = document.createElement('div');
         itemContentDiv.className = 'investment-item-content transition-transform duration-300 ease-in-out flex justify-between items-center p-2 bg-white rounded-md';
-        itemContentDiv.innerHTML = `
+        if (item.name.toLowerCase() === 'usd') {
+          itemContentDiv.innerHTML = `
                             <span class="font-medium text-gray-700 text-sm">${item.name}</span>
-                            <span class="text-xs text-gray-500">$${item.value.toFixed(2)} (${item.ownedShares.toFixed(4)} shares)</span>
+          <span class="text-xs text-gray-500">$${item.value.toFixed(2)}</span>
+
                         `;
+        } else {
+          itemContentDiv.innerHTML = `
+          <span class="font-medium text-gray-700 text-sm">${item.name}</span>
+          <span class="text-xs text-gray-500">$${item.value.toFixed(2)} (${item.ownedShares.toFixed(4)} shares)</span>
+      `;
+        }
+
 
         // Create the sell button (formerly delete)
         const sellBtn = document.createElement('button');

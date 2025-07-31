@@ -26,6 +26,11 @@ document.addEventListener('DOMContentLoaded', function () {
         { symbol: 'GOVT', name: 'iShares U.S. Treasury Bond', type: "bond", currentPrice: 101.9000, updateTime: '2025-07-30 10:33:00' },
         { symbol: 'MIX_FUND', name: 'MIX_FUND', type: "fund", currentPrice: 180.6000, updateTime: '2025-07-30 10:35:00' },
         { symbol: 'MSFT', name: 'Microsoft Corp.', type: "stock", currentPrice: 434.5000, updateTime: '2025-07-30 10:32:00' },
+        { symbol: 'TSLA', name: 'Tesla, Inc.', type: "stock", currentPrice: 268.1, updateTime: '2025-07-30 10:33:00' },
+        { symbol: 'MAOTAI', name: 'MAOTAI', type: "stock", currentPrice: 2012.3, updateTime: '2025-07-30 10:35:00' },
+        { symbol: 'AMZN', name: 'Amazon.com, Inc. (AMZN)', type: "stock", currentPrice: 208.7, updateTime: '2025-07-30 10:32:00' },
+        { symbol: 'YFD_LANCHOU', name: 'YFD_LANCHOU', type: "fund", currentPrice: 1.91, updateTime: '2025-07-30 10:35:00' },
+        { symbol: 'TH_GUANGFU', name: 'TH_GUANGFU', type: "fund", currentPrice: 1.365, updateTime: '2025-07-30 10:32:00' },
     ];
 
     // Function to render stock search results for add modal
